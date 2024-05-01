@@ -50,7 +50,7 @@ b.ir_transmit(p)
 The following code enables IR receving on the badge and waits for a packet.
 
 ```Python
-from blaster import Blaster
+from blaster.blaster import Blaster
 from machine import Pin
 
 b = Blaster(Pin(4), Pin(25), None) #The IR TX led is not defined bacause we will only listen for data
