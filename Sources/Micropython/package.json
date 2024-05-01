@@ -1,7 +1,7 @@
 {
     "urls": [
       ["blaster/blaster.py", "github:Fri3dCamp/blaster_2024/Sources/Micropython/blaster.py"],
-      ["blaster/raw_ir_packet.py", "github:Fri3dCamp/blaster_2024/Sources/Micropython/blaster.py"]
+      ["blaster/raw_ir_packet.py", "github:Fri3dCamp/blaster_2024/Sources/Micropython/raw_ir_packet.py"]
     ],
     "version": "0.1"
 }
