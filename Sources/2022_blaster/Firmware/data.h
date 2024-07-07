@@ -38,33 +38,23 @@ enum Action : uint8_t
   eActionHeal = 2,
 };
 
-enum CommandType : uint8_t
-{
-  eCommandShoot = 1,
-  eCommandHeal = 2,
-  eCommandSetChannel = 3,
-  eCommandSetTriggerAction = 4,
-  eCommandSetGameMode = 5,
-  eCommandSetHitTimeout = 6,
-  eCommandPlayAnimation = 7,
-  eCommandTeamChange = 8,
-  eCommandChatter = 9,
-  eCommandPullTrigger = 10,
-  eCommandSetSettings = 11,
-  //eCommandSetFlagsB = 12,
-  //eCommandReservedA = 13,
-  //eCommandReservedB = 14,
-  eCommandBlasterAck = 15,
-};
+#define CH_STANDALONE 0
+#define CH_MANAGED 1
+#define CMD_ACK 0
+#define CMD_MODE 1
+#define CMD_SHOT 2
+#define CMD_TRIGGER 3
+#define CMD_TEAM 4
+#define CMD_ANIMATION 5
 
 union IrDataPacket
 {
   uint32_t raw;
   struct
   {
-    uint8_t channel: 2;
+    uint8_t channel: 1;
     uint8_t team: 3;
-    uint8_t action: 3;
+    uint8_t action: 2;
     uint8_t action_param: 4;
     uint16_t player_id: 12;
     uint8_t crc: 8;
@@ -76,8 +66,23 @@ union LinkDataPacket
   uint32_t raw;
   struct
   {
-    uint32_t todo: 24;
+    uint8_t command: 3;
+    uint32_t parameter: 21;
     uint8_t crc: 8;
+  };
+};
+
+union ModeParameter
+{
+  uint32_t raw;
+  struct
+  {
+    uint8_t mode: 1;
+    uint8_t team: 3;
+    uint8_t action: 2;
+    uint16_t id: 11;
+    uint8_t hp: 3;
+    uint8_t ready: 1;
   };
 };
 

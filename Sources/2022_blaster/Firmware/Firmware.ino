@@ -22,7 +22,7 @@ enum GameMode : uint8_t
 // if false the trigger is disabled. Set by the badge (trigger field)
 bool can_shoot = true;
 
-uint8_t channel = 0; // default channel
+uint8_t channel = CH_STANDALONE; // default channel
 
 uint8_t badge_team = 0;  // the team set by the badge (overrules the blaster if != 0)
 uint8_t zombie_team = 0;  // indicates the team that infected you
@@ -67,9 +67,9 @@ void setup()
 
 
   Serial.println(" * Blaster Ready\n\n");
-  sendACK();
+  //sendACK();
   delay(500);
-  sendACK(true); //blaster is listening 
+  //sendACK(); //blaster is listening 
 }
 
 void loop()
@@ -141,79 +141,33 @@ void chatter_master_loop(){
 void handle_badge_packet(LinkDataPacket packet)
 {
   if (packet.raw == 0) return;
-  Serial.print("Link data received");
-  Serial.print(packet.raw);
-  /*
-  if (packet.command == 0)
-    return;
-  Serial.println("Received message from badge");
 
-  switch (packet.command)
-  {
-  case eCommandSetChannel:
-    sendACK();
-    setChannel(packet);
-    Serial.println("eCommandSetChannel");
-    sendACK(true);
-    break;
-  case eCommandSetTriggerAction:
-    sendACK();
-    setTriggerAction(packet);
-    Serial.println("eCommandSetTriggerAction");
-    sendACK(true);
-    break;
-  case eCommandSetGameMode:
-    sendACK();
-    setGameMode(packet);
-    Serial.println("eCommandSetGameMode");
-    sendACK(true);
-    break;
-  case eCommandTeamChange:
-    sendACK();
-    setTeamColor(packet);
-    Serial.println("eCommandTeamChange");
-    sendACK(true);
-    break;
-  case eCommandShoot:
-    sendACK();
-    handle_damage_received(packet);
-    Serial.println("eCommandShoot");
-    sendACK(true);
-    break;
-  case eCommandHeal:
-    sendACK();
-    handle_healing_received(packet);
-    Serial.println("eCommandHeal");
-    sendACK(true);
-    break;
-  case eCommandPlayAnimation:
-    sendACK();
-    handle_play_animation(packet);
-    Serial.println("eCommandPlayAnimation");
-    sendACK(true);
-    break;
-  case eCommandChatter:
-    sendACK();
-    handle_play_chatter(packet);
-    Serial.println("eCommandChatter");
-    sendACK(true);
-    break;
-  case eCommandSetHitTimeout:
-    sendACK();
-    handle_set_hit_timeout(packet);
-    Serial.println("eCommandSetHitTimeout");
-    sendACK(true);
-    break;
-  case eCommandSetSettings:
-    sendACK();
-    handle_set_settings(packet);
-    Serial.println();
-    sendACK(true);
-    break;
-  default:
-    break;
+  switch (packet.command){
+    case CMD_ACK:
+      Serial.println("Link_in ACK");
+      //not supposed to happen
+      break;
+    case CMD_MODE:
+      ModeParameter payload;
+      payload.raw = packet.parameter;
+      Serial.print("  Mode: ");
+      Serial.println(payload.mode);
+      Serial.print("  Team: ");
+      Serial.println(payload.team);
+      Serial.print("  Action: ");
+      Serial.println(payload.action);
+      Serial.print("  ID: ");
+      Serial.println(payload.id);
+      Serial.print("  hp: ");
+      Serial.println(payload.hp);
+      Serial.print("  ready: ");
+      Serial.println(payload.ready);
+
+      sendAck();
+      break;
   }
-  */
+
+ 
 }
 
 void handle_set_hit_timeout(LinkDataPacket packet){
@@ -445,10 +399,12 @@ void damageShot()
   packet.action_param = 1;
   Data.transmit(packet);
 
+  delay(100);
+
   LinkDataPacket dp;
-  dp.raw = 9;
+  dp.raw = 0;
+  dp.command = CMD_TRIGGER;
   Data.transmit(dp);
-  Serial.println("===");
 
 /*
   DataPacket d;
@@ -549,26 +505,16 @@ void modeSelection(){
 
 
 
-void sendACK()
+void sendAck()
 {
-  sendACK(false);
+  delay(10);
+  LinkDataPacket dp;
+  dp.raw = 0;
+  dp.command = CMD_ACK;
+  dp.parameter = 1;  // Something to ensure we don't send out a 00000 packet
+  Data.transmit(dp);
 }
 
-void sendACK(bool blasterReady)
-{
-  /*
-  DataPacket d;
-  d.team = eNoTeam;
-  d.trigger_state = 0;
-  d.command = eCommandBlasterAck;
-  d.parameter = 0;
-  if (blasterReady) {
-    d.parameter |= 1;
-  }
-  Serial.println("Sending ACK to badge.");
-  */
-  //Data.transmit(d, eBadge);  TODO: maybe move to data layer
-}
 
 bool triggerPressed()
 {
