@@ -39,13 +39,12 @@ static uint32_t _leds::wheel(byte WheelPos)
 
 void _leds::update()
 {
-
   strip.show();
 }
 
 void _leds::setPixelColor(byte pixel, uint32_t color)
 {
-  if (pixel == 0)
+  if (pixel == 0) //5mm TH LED has a different color order
   {
     uint32_t green = (color >> 16 & 0xff);
     uint32_t red = (color >> 8 & 0xff);
@@ -65,26 +64,16 @@ void _leds::setDiskColor(byte disk, uint32_t color)
   }
   else if (disk == 1)
   {
-    for (int i = 1; i < 5; i++)
-    {
-      setPixelColor(i, color);
-    }
+    for (int i = 1; i < 5; i++) setPixelColor(i, color);
   }
   else if (disk == 2)
   {
-    for (int i = 5; i < 7; i++)
-    {
-      setPixelColor(i, color);
-    }
+    for (int i = 5; i < 7; i++) setPixelColor(i, color);
   }
   else if (disk == 3)
   {
-    for (int i = 7; i < 9; i++)
-    {
-      setPixelColor(i, color);
-    }
+    for (int i = 7; i < 9; i++) setPixelColor(i, color);
   }
-  update();
 }
 
 void _leds::init()
@@ -92,7 +81,6 @@ void _leds::init()
   strip.begin();
   strip.setBrightness(255);
   strip.clear();
-  update();
 }
 
 void _leds::clear()
@@ -103,9 +91,8 @@ void _leds::clear()
 }
 
 void _leds::stealth(bool status){
-  if (status){
-      strip.setBrightness(1);
-  } else   strip.setBrightness(255);
+  if (status) strip.setBrightness(1);
+  else strip.setBrightness(255);
 }
 
 void _leds::setBrightness(uint8_t brightness){
