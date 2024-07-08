@@ -23,11 +23,9 @@ enum TeamColor : uint8_t
   eTeamRex = 0b001,
   eTeamGiggle = 0b010,
   eTeamBuzz = 0b100,
-
   eTeamYellow = eTeamRex | eTeamGiggle,
   eTeamMagenta = eTeamRex | eTeamBuzz,
   eTeamCyan = eTeamGiggle | eTeamBuzz,
-
   eTeamWhite = eTeamRex | eTeamGiggle | eTeamBuzz
 };
 
@@ -69,6 +67,18 @@ union LinkDataPacket
     uint8_t command: 3;
     uint32_t parameter: 21;
     uint8_t crc: 8;
+  };
+};
+
+union ShotParameter
+{
+  uint32_t raw;
+  struct
+  {
+    uint8_t team: 3;
+    uint8_t action: 2;
+    uint16_t id: 12;
+    uint8_t hp: 3;  //new HP amount
   };
 };
 
