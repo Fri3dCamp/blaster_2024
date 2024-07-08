@@ -82,6 +82,15 @@ union ShotParameter
   };
 };
 
+union TriggerParameter
+{
+  uint32_t raw;
+  struct
+  {
+    uint8_t new_team: 3;
+  };
+};
+
 union ModeParameter
 {
   uint32_t raw;
@@ -95,6 +104,8 @@ union ModeParameter
     uint8_t ready: 1;
   };
 };
+
+
 
 enum DeviceType: uint8_t
 {
