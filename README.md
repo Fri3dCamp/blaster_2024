@@ -1,15 +1,15 @@
-# Fri3dcamp blaster 2024
+# Fri3d Camp blaster 2024
 
 This repository contains the design files, production files and sources for the 2024 blaster as well as the sources for the 2022 blaster.
 
 ![Revision 00 prototype](Media/Flamingo_00.png)
 
 ## Micropython Badge Driver
-in Sources/Micropython you find the driver for the 2022/2024 Badge to communicate with the Blaster.
+in Sources/Micropython you'll find the driver for the 2022/2024 Badge to communicate with the Blaster.
 
 Features:
  - Receive IR packets
- - Send IR packets (if you have the Blaster SAO)
+ - Send IR packets (if you have the Tiny Blaster SAO)
  - Send/Receive Link packets (link cable)
  - Control the blaster via Link packets
 
