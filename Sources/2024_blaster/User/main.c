@@ -19,20 +19,10 @@
  */
 
 #include "debug.h"
+#include "lana.h"
 
-/* Global typedef */
 
-/* Global define */
 
-/* Global Variable */
-
-/*********************************************************************
- * @fn      main
- *
- * @brief   Main program.
- *
- * @return  none
- */
 int main(void)
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
@@ -43,7 +33,13 @@ int main(void)
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
     printf("This is printf example\r\n");
 
+
     while(1)
-    {
+    {   tone(400);
+        Delay_Ms(500);
+        notone();
+        Delay_Ms(500);
     }
 }
+
+
