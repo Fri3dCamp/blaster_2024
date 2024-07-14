@@ -23,7 +23,7 @@
 #include "ch32v20x.h"
 
 
-volatile int x = 0;
+volatile int32_t x = 0;
 
 // Timer 1 Interrupt Service Routine
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -63,6 +63,34 @@ void Timer1_Init(void) {
 
     // Start the timer
     TIM_Cmd(TIM1, ENABLE);
+}
+
+void SYSTICK_Init_Config(u64 ticks)
+{
+    SysTick->SR = 0;
+    SysTick->CNT = 0;
+    SysTick->CMP = ticks;
+    SysTick->CTLR =0xF;
+
+    NVIC_SetPriority(SysTicK_IRQn, 1);
+    NVIC_EnableIRQ(SysTicK_IRQn);
+}
+
+
+void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void SysTick_Handler(void)
+{
+    // move the compare further ahead in time.
+    // as a warning, if more than this length of time
+    // passes before triggering, you may miss your
+    // interrupt.
+    //SysTick->CMP += (48000000/1);
+
+    // clear IRQ
+    SysTick->SR = 0;
+
+    // update counter
+    x++;
 }
 
 void enable_ir_carrier()
@@ -124,7 +152,8 @@ int main(void)
     //Delay_Ms(1000);
 
     pinMode(PIN_PB1, OUTPUT);
-    Timer1_Init();
+    SYSTICK_Init_Config((SystemCoreClock/1000)-1);
+    //Timer1_Init();
     //__enable_irq();
 
     x = 0;
