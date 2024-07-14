@@ -152,7 +152,8 @@ int main(void)
     //Delay_Ms(1000);
 
     pinMode(PIN_PB1, OUTPUT);
-    SYSTICK_Init_Config((SystemCoreClock/1000)-1);
+    SYSTICK_Init_Config(SystemCoreClock/20000);
+    //__disable_irq();
     //Timer1_Init();
     //__enable_irq();
 

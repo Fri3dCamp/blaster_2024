@@ -41,19 +41,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  12 .debug_ranges 000007c0  00000000  00000000  00012ad0  2**3
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_line   00009512  00000000  00000000  00013290  2**0
+ 13 .debug_line   00009502  00000000  00000000  00013290  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    0000261d  00000000  00000000  0001c7a2  2**0
+ 14 .debug_str    0000261d  00000000  00000000  0001c792  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      00000033  00000000  00000000  0001edbf  2**0
+ 15 .comment      00000033  00000000  00000000  0001edaf  2**0
                   CONTENTS, READONLY
- 16 .debug_frame  000018e4  00000000  00000000  0001edf4  2**2
+ 16 .debug_frame  000018e4  00000000  00000000  0001ede4  2**2
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_loc    000036b3  00000000  00000000  000206d8  2**0
+ 17 .debug_loc    000036b3  00000000  00000000  000206c8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .stab         00000084  00000000  00000000  00023d8c  2**2
+ 18 .stab         00000084  00000000  00000000  00023d7c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 19 .stabstr      00000117  00000000  00000000  00023e10  2**0
+ 19 .stabstr      00000117  00000000  00000000  00023e00  2**0
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 00000000 l    d  .init	00000000 .init
@@ -761,10 +761,10 @@ Disassembly of section .text:
      3f6:	4545                	li	a0,17
      3f8:	3d5d                	jal	2ae <pinMode>
      3fa:	08042503          	lw	a0,128(s0)
-     3fe:	3e800793          	li	a5,1000
-     402:	4581                	li	a1,0
+     3fe:	6795                	lui	a5,0x5
+     400:	e2078793          	addi	a5,a5,-480 # 4e20 <_data_lma+0x30dc>
      404:	02f55533          	divu	a0,a0,a5
-     408:	157d                	addi	a0,a0,-1
+     408:	4581                	li	a1,0
      40a:	37a5                	jal	372 <SYSTICK_Init_Config>
      40c:	81818713          	addi	a4,gp,-2024 # 20000098 <_edata>
      410:	00072023          	sw	zero,0(a4) # 1000 <__sinit+0x34>
