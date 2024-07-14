@@ -45,7 +45,7 @@ void Timer1_Init(void) {
     NVIC_InitTypeDef NVIC_InitStructure;
 
     // Timer base configuration
-    TIM_TimeBaseStructure.TIM_Period = 866;            // 866
+    TIM_TimeBaseStructure.TIM_Period = 7999;            // 866
     TIM_TimeBaseStructure.TIM_Prescaler = 0;         // 0
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -110,7 +110,7 @@ void enable_ir_carrier()
 
 int main(void)
 {
-    //SystemInit();
+    SystemInit();
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
     SystemCoreClockUpdate();
     Delay_Init();
@@ -119,32 +119,42 @@ int main(void)
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
     printf("This is printf example\r\n");
 
-    enable_ir_carrier();
+    //enable_ir_carrier();
 
-    Delay_Ms(1000);
+    //Delay_Ms(1000);
+
+    pinMode(PIN_PB1, OUTPUT);
     Timer1_Init();
     //__enable_irq();
 
+    x = 0;
     while(1)
     {
-        Delay_Ms(1000);
-        //while(x < 1786);
+
+        if (x%2==0) digitalWrite(PIN_PB1, LOW);
+        else digitalWrite(PIN_PB1, HIGH);
+        //digitalWrite(PIN_PB1, LOW);
+        //digitalWrite(PIN_PB1, HIGH);
+
+        /*
+        //Delay_Ms(1000);
+        while(x < 1786);
         pinMode(PIN_PB1, OUTPUT_AF_PP);
         TIM_Cmd(TIM3, ENABLE);
         x=0;
-        printf("IR ON\r\n");
+        //printf("IR ON\r\n");
 
-        Delay_Ms(1000);
-        //while(x < 1786);
+        //Delay_Ms(1000);
+        while(x < 1786);
         TIM_Cmd(TIM3, DISABLE);
         pinMode(PIN_PB1, OUTPUT);
         digitalWrite(PIN_PB1, LOW);
         x=0;
-        printf("IR OFF\r\n");
+        //printf("IR OFF\r\n");
        /* Delay_Ms(1000);
         int d = x;
-        printf( "x:%d\r\n", d );*/
-
+        printf( "x:%d\r\n", d );
+*/
     }
 }
 
