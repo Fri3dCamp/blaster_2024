@@ -1,3 +1,6 @@
+#ifndef LANA_H
+#define LANA_H
+
 #include "debug.h"
 
 #define PIN_PA0  0
@@ -34,6 +37,13 @@
 #define INPUT_PULLDOWN 0x3
 #define OUTPUT_AF_PP 0x4
 
+extern volatile uint32_t ir_ticks;
+
+uint32_t micros();
+uint32_t millis();
+void delay_ms(uint32_t delay);
+void SYSTICK_Init_Config(u64 ticks);
+
 //void LED_SendBit(uint8_t bit);
 //void LED_SendColour(uint8_t red, uint8_t green, uint8_t blue);
 void SetLed(int i, uint8_t r,uint8_t g,uint8_t b);
@@ -50,3 +60,5 @@ void initNeopixel();
 
 void tone(uint16_t frequency);
 void notone();
+
+#endif

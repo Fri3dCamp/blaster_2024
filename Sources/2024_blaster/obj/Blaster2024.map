@@ -1,7 +1,7 @@
 Archive member included to satisfy reference by file (symbol)
 
 c:/mounriver/mounriver_studio/toolchain/risc-v embedded gcc/bin/../lib/gcc/riscv-none-embed/8.2.0/rv32imacxw/ilp32\libgcc.a(_udivdi3.o)
-                              ./User/main.o (__udivdi3)
+                              ./User/lana.o (__udivdi3)
 c:/mounriver/mounriver_studio/toolchain/risc-v embedded gcc/bin/../lib/gcc/riscv-none-embed/8.2.0/rv32imacxw/ilp32\libgcc.a(save-restore.o)
                               ./Peripheral/src/ch32v20x_flash.o (__riscv_save_7)
 c:/mounriver/mounriver_studio/toolchain/risc-v embedded gcc/bin/../lib/gcc/riscv-none-embed/8.2.0/rv32imacxw/ilp32\libgcc.a(_clz.o)
@@ -1448,33 +1448,33 @@ END GROUP
  .text.HardFault_Handler
                 0x000000000000020a        0x2 ./User/ch32v20x_it.o
                 0x000000000000020a                HardFault_Handler
- .text.PinToPort
-                0x000000000000020c       0x36 ./User/lana.o
-                0x000000000000020c                PinToPort
- .text.PinToPeriph
-                0x0000000000000242       0x24 ./User/lana.o
-                0x0000000000000242                PinToPeriph
- .text.DisableSWD_UsePinsAsGPIO
-                0x0000000000000266       0x48 ./User/lana.o
-                0x0000000000000266                DisableSWD_UsePinsAsGPIO
- .text.pinMode  0x00000000000002ae       0x76 ./User/lana.o
-                0x00000000000002ae                pinMode
- .text.micros   0x0000000000000324       0x24 ./User/main.o
-                0x0000000000000324                micros
- .text.millis   0x0000000000000348       0x10 ./User/main.o
-                0x0000000000000348                millis
+ .text.micros   0x000000000000020c       0x26 ./User/lana.o
+                0x000000000000020c                micros
+ .text.millis   0x0000000000000232       0x10 ./User/lana.o
+                0x0000000000000232                millis
  .text.delay_ms
-                0x0000000000000358       0x16 ./User/main.o
-                0x0000000000000358                delay_ms
+                0x0000000000000242       0x16 ./User/lana.o
+                0x0000000000000242                delay_ms
  .text.SYSTICK_Init_Config
-                0x000000000000036e       0x2a ./User/main.o
-                0x000000000000036e                SYSTICK_Init_Config
+                0x0000000000000258       0x2a ./User/lana.o
+                0x0000000000000258                SYSTICK_Init_Config
  .text.SysTick_Handler
-                0x0000000000000398       0x16 ./User/main.o
-                0x0000000000000398                SysTick_Handler
+                0x0000000000000282       0x16 ./User/lana.o
+                0x0000000000000282                SysTick_Handler
+ .text.PinToPort
+                0x0000000000000298       0x36 ./User/lana.o
+                0x0000000000000298                PinToPort
+ .text.PinToPeriph
+                0x00000000000002ce       0x24 ./User/lana.o
+                0x00000000000002ce                PinToPeriph
+ .text.DisableSWD_UsePinsAsGPIO
+                0x00000000000002f2       0x48 ./User/lana.o
+                0x00000000000002f2                DisableSWD_UsePinsAsGPIO
+ .text.pinMode  0x000000000000033a       0x76 ./User/lana.o
+                0x000000000000033a                pinMode
  .text.startup.main
-                0x00000000000003ae       0x62 ./User/main.o
-                0x00000000000003ae                main
+                0x00000000000003b0       0x60 ./User/main.o
+                0x00000000000003b0                main
  .text.SystemInit
                 0x0000000000000410       0xa8 ./User/system_ch32v20x.o
                 0x0000000000000410                SystemInit
@@ -1835,7 +1835,7 @@ END GROUP
                 0x0000000020000098                PROVIDE (_sbss = .)
  *(.sbss*)
  .sbss.ir_ticks
-                0x0000000020000098        0x4 ./User/main.o
+                0x0000000020000098        0x4 ./User/lana.o
                 0x0000000020000098                ir_ticks
  .sbss.MCU_Version
                 0x000000002000009c        0x1 ./Peripheral/src/ch32v20x_gpio.o
@@ -1870,39 +1870,39 @@ END GROUP
                 0x0000000020002800                PROVIDE (_eusrstack = .)
 OUTPUT(Blaster2024.elf elf32-littleriscv)
 
-.debug_info     0x0000000000000000     0xa322
+.debug_info     0x0000000000000000     0xa345
  .debug_info    0x0000000000000000      0x962 ./User/ch32v20x_it.o
- .debug_info    0x0000000000000962     0x16b6 ./User/lana.o
- .debug_info    0x0000000000002018     0x1714 ./User/main.o
- .debug_info    0x000000000000372c      0xb3b ./User/system_ch32v20x.o
- .debug_info    0x0000000000004267       0x22 ./Startup/startup_ch32v20x_D6.o
- .debug_info    0x0000000000004289      0xa94 ./Peripheral/src/ch32v20x_dbgmcu.o
- .debug_info    0x0000000000004d1d     0x1354 ./Peripheral/src/ch32v20x_gpio.o
- .debug_info    0x0000000000006071      0xe6c ./Peripheral/src/ch32v20x_misc.o
- .debug_info    0x0000000000006edd     0x125c ./Peripheral/src/ch32v20x_rcc.o
- .debug_info    0x0000000000008139     0x1340 ./Peripheral/src/ch32v20x_usart.o
- .debug_info    0x0000000000009479      0xea9 ./Debug/debug.o
+ .debug_info    0x0000000000000962     0x1c21 ./User/lana.o
+ .debug_info    0x0000000000002583     0x11cc ./User/main.o
+ .debug_info    0x000000000000374f      0xb3b ./User/system_ch32v20x.o
+ .debug_info    0x000000000000428a       0x22 ./Startup/startup_ch32v20x_D6.o
+ .debug_info    0x00000000000042ac      0xa94 ./Peripheral/src/ch32v20x_dbgmcu.o
+ .debug_info    0x0000000000004d40     0x1354 ./Peripheral/src/ch32v20x_gpio.o
+ .debug_info    0x0000000000006094      0xe6c ./Peripheral/src/ch32v20x_misc.o
+ .debug_info    0x0000000000006f00     0x125c ./Peripheral/src/ch32v20x_rcc.o
+ .debug_info    0x000000000000815c     0x1340 ./Peripheral/src/ch32v20x_usart.o
+ .debug_info    0x000000000000949c      0xea9 ./Debug/debug.o
 
-.debug_abbrev   0x0000000000000000     0x1f29
+.debug_abbrev   0x0000000000000000     0x1ebe
  .debug_abbrev  0x0000000000000000      0x1cf ./User/ch32v20x_it.o
- .debug_abbrev  0x00000000000001cf      0x402 ./User/lana.o
- .debug_abbrev  0x00000000000005d1      0x425 ./User/main.o
- .debug_abbrev  0x00000000000009f6      0x2b0 ./User/system_ch32v20x.o
- .debug_abbrev  0x0000000000000ca6       0x12 ./Startup/startup_ch32v20x_D6.o
- .debug_abbrev  0x0000000000000cb8      0x2f7 ./Peripheral/src/ch32v20x_dbgmcu.o
- .debug_abbrev  0x0000000000000faf      0x34b ./Peripheral/src/ch32v20x_gpio.o
- .debug_abbrev  0x00000000000012fa      0x2ea ./Peripheral/src/ch32v20x_misc.o
- .debug_abbrev  0x00000000000015e4      0x351 ./Peripheral/src/ch32v20x_rcc.o
- .debug_abbrev  0x0000000000001935      0x312 ./Peripheral/src/ch32v20x_usart.o
- .debug_abbrev  0x0000000000001c47      0x2e2 ./Debug/debug.o
+ .debug_abbrev  0x00000000000001cf      0x525 ./User/lana.o
+ .debug_abbrev  0x00000000000006f4      0x297 ./User/main.o
+ .debug_abbrev  0x000000000000098b      0x2b0 ./User/system_ch32v20x.o
+ .debug_abbrev  0x0000000000000c3b       0x12 ./Startup/startup_ch32v20x_D6.o
+ .debug_abbrev  0x0000000000000c4d      0x2f7 ./Peripheral/src/ch32v20x_dbgmcu.o
+ .debug_abbrev  0x0000000000000f44      0x34b ./Peripheral/src/ch32v20x_gpio.o
+ .debug_abbrev  0x000000000000128f      0x2ea ./Peripheral/src/ch32v20x_misc.o
+ .debug_abbrev  0x0000000000001579      0x351 ./Peripheral/src/ch32v20x_rcc.o
+ .debug_abbrev  0x00000000000018ca      0x312 ./Peripheral/src/ch32v20x_usart.o
+ .debug_abbrev  0x0000000000001bdc      0x2e2 ./Debug/debug.o
 
 .debug_aranges  0x0000000000000000      0x4d0
  .debug_aranges
                 0x0000000000000000       0x28 ./User/ch32v20x_it.o
  .debug_aranges
-                0x0000000000000028       0x90 ./User/lana.o
+                0x0000000000000028       0xb8 ./User/lana.o
  .debug_aranges
-                0x00000000000000b8       0x50 ./User/main.o
+                0x00000000000000e0       0x28 ./User/main.o
  .debug_aranges
                 0x0000000000000108       0x28 ./User/system_ch32v20x.o
  .debug_aranges
@@ -1922,8 +1922,8 @@ OUTPUT(Blaster2024.elf elf32-littleriscv)
 
 .debug_ranges   0x0000000000000000      0x4c0
  .debug_ranges  0x0000000000000000       0x18 ./User/ch32v20x_it.o
- .debug_ranges  0x0000000000000018       0xd0 ./User/lana.o
- .debug_ranges  0x00000000000000e8       0x40 ./User/main.o
+ .debug_ranges  0x0000000000000018       0xf8 ./User/lana.o
+ .debug_ranges  0x0000000000000110       0x18 ./User/main.o
  .debug_ranges  0x0000000000000128       0x18 ./User/system_ch32v20x.o
  .debug_ranges  0x0000000000000140       0x28 ./Startup/startup_ch32v20x_D6.o
  .debug_ranges  0x0000000000000168       0x50 ./Peripheral/src/ch32v20x_dbgmcu.o
@@ -1933,26 +1933,26 @@ OUTPUT(Blaster2024.elf elf32-littleriscv)
  .debug_ranges  0x00000000000003b8       0xe0 ./Peripheral/src/ch32v20x_usart.o
  .debug_ranges  0x0000000000000498       0x28 ./Debug/debug.o
 
-.debug_line     0x0000000000000000     0x6184
+.debug_line     0x0000000000000000     0x6183
  .debug_line    0x0000000000000000      0x240 ./User/ch32v20x_it.o
- .debug_line    0x0000000000000240      0xe42 ./User/lana.o
- .debug_line    0x0000000000001082      0x73b ./User/main.o
- .debug_line    0x00000000000017bd      0x5bf ./User/system_ch32v20x.o
- .debug_line    0x0000000000001d7c      0x121 ./Startup/startup_ch32v20x_D6.o
- .debug_line    0x0000000000001e9d      0x387 ./Peripheral/src/ch32v20x_dbgmcu.o
- .debug_line    0x0000000000002224     0x1618 ./Peripheral/src/ch32v20x_gpio.o
- .debug_line    0x000000000000383c      0x3ea ./Peripheral/src/ch32v20x_misc.o
- .debug_line    0x0000000000003c26     0x117c ./Peripheral/src/ch32v20x_rcc.o
- .debug_line    0x0000000000004da2      0xe83 ./Peripheral/src/ch32v20x_usart.o
- .debug_line    0x0000000000005c25      0x55f ./Debug/debug.o
+ .debug_line    0x0000000000000240     0x100b ./User/lana.o
+ .debug_line    0x000000000000124b      0x571 ./User/main.o
+ .debug_line    0x00000000000017bc      0x5bf ./User/system_ch32v20x.o
+ .debug_line    0x0000000000001d7b      0x121 ./Startup/startup_ch32v20x_D6.o
+ .debug_line    0x0000000000001e9c      0x387 ./Peripheral/src/ch32v20x_dbgmcu.o
+ .debug_line    0x0000000000002223     0x1618 ./Peripheral/src/ch32v20x_gpio.o
+ .debug_line    0x000000000000383b      0x3ea ./Peripheral/src/ch32v20x_misc.o
+ .debug_line    0x0000000000003c25     0x117c ./Peripheral/src/ch32v20x_rcc.o
+ .debug_line    0x0000000000004da1      0xe83 ./Peripheral/src/ch32v20x_usart.o
+ .debug_line    0x0000000000005c24      0x55f ./Debug/debug.o
 
 .debug_str      0x0000000000000000     0x1ca8
  .debug_str     0x0000000000000000      0x556 ./User/ch32v20x_it.o
                                         0x5b7 (size before relaxing)
- .debug_str     0x0000000000000556      0x5d6 ./User/lana.o
-                                        0xb8c (size before relaxing)
- .debug_str     0x0000000000000b2c      0x487 ./User/main.o
-                                        0xec9 (size before relaxing)
+ .debug_str     0x0000000000000556      0x9b2 ./User/lana.o
+                                        0xf86 (size before relaxing)
+ .debug_str     0x0000000000000f08       0xab ./User/main.o
+                                        0xaf7 (size before relaxing)
  .debug_str     0x0000000000000fb3       0xd1 ./User/system_ch32v20x.o
                                         0x6a0 (size before relaxing)
  .debug_str     0x0000000000001084       0x2d ./Startup/startup_ch32v20x_D6.o
@@ -1985,8 +1985,8 @@ OUTPUT(Blaster2024.elf elf32-littleriscv)
 
 .debug_frame    0x0000000000000000     0x1264
  .debug_frame   0x0000000000000000       0x30 ./User/ch32v20x_it.o
- .debug_frame   0x0000000000000030      0x1c0 ./User/lana.o
- .debug_frame   0x00000000000001f0       0xc4 ./User/main.o
+ .debug_frame   0x0000000000000030      0x238 ./User/lana.o
+ .debug_frame   0x0000000000000268       0x4c ./User/main.o
  .debug_frame   0x00000000000002b4       0x30 ./User/system_ch32v20x.o
  .debug_frame   0x00000000000002e4       0x70 ./Peripheral/src/ch32v20x_dbgmcu.o
  .debug_frame   0x0000000000000354      0x170 ./Peripheral/src/ch32v20x_gpio.o
@@ -2023,8 +2023,7 @@ OUTPUT(Blaster2024.elf elf32-littleriscv)
  .debug_frame   0x0000000000001244       0x20 c:/mounriver/mounriver_studio/toolchain/risc-v embedded gcc/bin/../lib/gcc/riscv-none-embed/8.2.0/../../../../riscv-none-embed/lib/rv32imacxw/ilp32\libnosys.a(read.o)
 
 .debug_loc      0x0000000000000000     0x1d6c
- .debug_loc     0x0000000000000000      0x350 ./User/lana.o
- .debug_loc     0x0000000000000350       0x68 ./User/main.o
+ .debug_loc     0x0000000000000000      0x3b8 ./User/lana.o
  .debug_loc     0x00000000000003b8       0xac ./User/system_ch32v20x.o
  .debug_loc     0x0000000000000464       0x6e ./Peripheral/src/ch32v20x_dbgmcu.o
  .debug_loc     0x00000000000004d2      0x8a1 ./Peripheral/src/ch32v20x_gpio.o

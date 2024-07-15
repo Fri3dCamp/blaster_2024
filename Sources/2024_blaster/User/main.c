@@ -3,57 +3,8 @@
 #include "ch32v20x.h"
 
 
-volatile uint32_t ir_ticks = 0;
-
-uint32_t micros()
-{
-    return (ir_ticks * 560) + (SysTick->CNT / 48);
-}
-
-uint32_t millis()
-{
-    return micros() / 1000;
-}
-
-void delay_ms(uint32_t delay)
-{
-    uint32_t ref = millis()+delay;
-    while (millis() < ref) __NOP();
-}
-
-void SYSTICK_Init_Config(u64 ticks)
-{
-    SysTick->SR = 0;
-    SysTick->CNT = 0;
-    SysTick->CMP = ticks;
-    SysTick->CTLR =0xF;
-
-    NVIC_SetPriority(SysTicK_IRQn, 1);
-    NVIC_EnableIRQ(SysTicK_IRQn);
-}
 
 
-void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void SysTick_Handler(void)
-{
-    // clear IRQ
-    SysTick->SR = 0;
-
-    // update counter
-    ir_ticks++;
-
-    /*if (x%2==0)
-    {
-        pinMode(PIN_PB1, OUTPUT_AF_PP);
-        TIM_Cmd(TIM3, ENABLE);
-    }
-    else {
-        TIM_Cmd(TIM3, DISABLE);
-        pinMode(PIN_PB1, OUTPUT);
-        digitalWrite(PIN_PB1, LOW);
-    }*/
-
-}
 
 void enable_ir_carrier()
 {
