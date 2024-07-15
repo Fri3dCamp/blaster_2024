@@ -1,5 +1,6 @@
 #include "debug.h"
 #include "lana.h"
+#include "data.h"
 #include "ch32v20x.h"
 
  void enable_ir_interupt(){
@@ -44,18 +45,18 @@
     void EXTI3_IRQHandler( void ) __attribute__((interrupt));
 
        void EXTI3_IRQHandler(void) {
-           // Check if the interrupt was from PA6 (Trigger)
+           // Check if the interrupt was from PA3
            if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
                // Clear the interrupt flag
                EXTI_ClearITPendingBit(EXTI_Line3);
-
+               //Data.receive_ISR(1,0,0);
            }
        }
 
     void EXTI9_5_IRQHandler( void ) __attribute__((interrupt));
 
     void EXTI9_5_IRQHandler(void) {
-        // Check if the interrupt was from PA6 (Trigger)
+        // Check if the interrupt was from PA5
         if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
             // Clear the interrupt flag
             EXTI_ClearITPendingBit(EXTI_Line5);
