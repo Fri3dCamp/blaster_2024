@@ -1,22 +1,4 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : main.c
- * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2021/06/06
- * Description        : Main program body.
- *********************************************************************************
- * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
- * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
 
-/*
- *@Note
- *USART Print debugging routine:
- *USART1_Tx(PA9).
- *This example demonstrates using USART1(PA9) as a print debug port output.
- *
- */
 
 #include "debug.h"
 #include "lana.h"
@@ -91,6 +73,18 @@ void SysTick_Handler(void)
 
     // update counter
     x++;
+
+    /*if (x%2==0)
+    {
+        pinMode(PIN_PB1, OUTPUT_AF_PP);
+        TIM_Cmd(TIM3, ENABLE);
+    }
+    else {
+        TIM_Cmd(TIM3, DISABLE);
+        pinMode(PIN_PB1, OUTPUT);
+        digitalWrite(PIN_PB1, LOW);
+    }*/
+
 }
 
 void enable_ir_carrier()
@@ -141,7 +135,6 @@ int main(void)
     SystemInit();
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
     SystemCoreClockUpdate();
-    Delay_Init();
     USART_Printf_Init(115200);
     printf("SystemClk:%d\r\n", SystemCoreClock);
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
@@ -152,19 +145,24 @@ int main(void)
     //Delay_Ms(1000);
 
     pinMode(PIN_PB1, OUTPUT);
-    SYSTICK_Init_Config(SystemCoreClock/20000);
+    SYSTICK_Init_Config(26876);
     //__disable_irq();
     //Timer1_Init();
     //__enable_irq();
 
     x = 0;
+    uint32_t max = 0;
     while(1)
     {
+        uint32_t v = SysTick->CNT;
+        if (v > max){
+            printf("%d\r\n",v);
+            max = v;
+        }
 
-        if (x%2==0) digitalWrite(PIN_PB1, LOW);
-        else digitalWrite(PIN_PB1, HIGH);
         //digitalWrite(PIN_PB1, LOW);
         //digitalWrite(PIN_PB1, HIGH);
+
 
         /*
         //Delay_Ms(1000);

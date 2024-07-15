@@ -52,27 +52,6 @@ void _leds::setPixelColor(uint8_t pixel, uint32_t color)
   */
 }
 
-void _leds::setDiskColor(int8_t disk, uint32_t color)
-{
-    /*
-  if (disk == 0)
-  {
-    setPixelColor(0, color);
-  }
-  else if (disk == 1)
-  {
-    for (int i = 1; i < 5; i++) setPixelColor(i, color);
-  }
-  else if (disk == 2)
-  {
-    for (int i = 5; i < 7; i++) setPixelColor(i, color);
-  }
-  else if (disk == 3)
-  {
-    for (int i = 7; i < 9; i++) setPixelColor(i, color);
-  }
-  */
-}
 
 void _leds::init()
 {
