@@ -5,47 +5,8 @@
 #include "ch32v20x.h"
 
 
-volatile int32_t x = 0;
+volatile uint32_t ir_ticks = 0;
 
-// Timer 1 Interrupt Service Routine
-void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void TIM1_UP_IRQHandler(void) {
-    if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET) {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-        // Your code to handle the interrupt
-        x++;
-    }
-}
-
-//1786 hz for .560 ms speed.
-//this timer will is used for IT TX
-void Timer1_Init(void) {
-    // Enable the clock for TIM1
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
-
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    // Timer base configuration
-    TIM_TimeBaseStructure.TIM_Period = 7999;            // 866
-    TIM_TimeBaseStructure.TIM_Prescaler = 0;         // 0
-    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
-
-    // Enable Timer update interrupt
-    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
-
-    // Enable TIM1 interrupt in NVIC
-    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-
-    // Start the timer
-    TIM_Cmd(TIM1, ENABLE);
-}
 
 void SYSTICK_Init_Config(u64 ticks)
 {
@@ -62,17 +23,11 @@ void SYSTICK_Init_Config(u64 ticks)
 void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void SysTick_Handler(void)
 {
-    // move the compare further ahead in time.
-    // as a warning, if more than this length of time
-    // passes before triggering, you may miss your
-    // interrupt.
-    //SysTick->CMP += (48000000/1);
-
     // clear IRQ
     SysTick->SR = 0;
 
     // update counter
-    x++;
+    ir_ticks++;
 
     /*if (x%2==0)
     {
@@ -138,19 +93,16 @@ int main(void)
     USART_Printf_Init(115200);
     printf("SystemClk:%d\r\n", SystemCoreClock);
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
-    printf("This is printf example\r\n");
 
     //enable_ir_carrier();
 
-    //Delay_Ms(1000);
 
     pinMode(PIN_PB1, OUTPUT);
     SYSTICK_Init_Config(26876);
     //__disable_irq();
-    //Timer1_Init();
     //__enable_irq();
 
-    x = 0;
+    ir_ticks = 0;
     uint32_t max = 0;
     while(1)
     {
@@ -159,10 +111,6 @@ int main(void)
             printf("%d\r\n",v);
             max = v;
         }
-
-        //digitalWrite(PIN_PB1, LOW);
-        //digitalWrite(PIN_PB1, HIGH);
-
 
         /*
         //Delay_Ms(1000);
