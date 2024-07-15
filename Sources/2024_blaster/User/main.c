@@ -1,11 +1,19 @@
-
-
 #include "debug.h"
 #include "lana.h"
 #include "ch32v20x.h"
 
 
 volatile uint32_t ir_ticks = 0;
+
+uint32_t micros()
+{
+    return (ir_ticks * 560) + (SysTick->CNT / 48);
+}
+
+uint32_t millis()
+{
+    return micros() / 1000;
+}
 
 
 void SYSTICK_Init_Config(u64 ticks)
@@ -102,14 +110,12 @@ int main(void)
     //__disable_irq();
     //__enable_irq();
 
-    ir_ticks = 0;
-    uint32_t max = 0;
+    uint32_t last = millis();
     while(1)
     {
-        uint32_t v = SysTick->CNT;
-        if (v > max){
-            printf("%d\r\n",v);
-            max = v;
+        if (millis()-last > 1000) {
+            printf("%d\r\n",millis());
+            last = millis();
         }
 
         /*
