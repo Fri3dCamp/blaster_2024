@@ -44,6 +44,10 @@ uint32_t millis();
 void delay_ms(uint32_t delay);
 void SYSTICK_Init_Config(u64 ticks);
 
+void enable_ir_carrier();
+void ir_on();
+void ir_off();
+
 //void LED_SendBit(uint8_t bit);
 //void LED_SendColour(uint8_t red, uint8_t green, uint8_t blue);
 void SetLed(int i, uint8_t r,uint8_t g,uint8_t b);
