@@ -5,12 +5,12 @@
 uint8_t rgbArray[3 * N]; // Each color is 3 bytes
 volatile uint32_t ir_ticks = 0;
 
-uint32_t micros()
+uint32_t micros(void)
 {
     return (ir_ticks * 560) + (SysTick->CNT / 48);
 }
 
-uint32_t millis()
+uint32_t millis(void)
 {
     return micros() / 1000;
 }
@@ -46,7 +46,7 @@ void SysTick_Handler(void)
 
 }
 
-void enable_ir_carrier()
+void enable_ir_carrier(void)
 {
     // Enable GPIO and Timer Clocks
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
@@ -81,12 +81,12 @@ void enable_ir_carrier()
     TIM_ARRPreloadConfig(TIM3, ENABLE);
 }
 
-void ir_on(){
+void ir_on(void){
     pinMode(PIN_PB1, OUTPUT_AF_PP);
     TIM_Cmd(TIM3, ENABLE);
 }
 
-void ir_off() {
+void ir_off(void) {
     TIM_Cmd(TIM3, DISABLE);
     pinMode(PIN_PB1, OUTPUT);
     digitalWrite(PIN_PB1, LOW);
@@ -143,7 +143,7 @@ void LED_SendColour(uint8_t red, uint8_t green, uint8_t blue)
     }
 }
 
-void Write(){
+void Write(void){
     for (int i = 0; i< N; i++){
         LED_SendColour(rgbArray[i*3],rgbArray[i*3+1],rgbArray[i*3+2]);
     }
@@ -185,7 +185,7 @@ uint16_t PinToBitMask(int pin)
     return 1<<(pin%16);
 }
 
-void DisableSWD_UsePinsAsGPIO() {
+void DisableSWD_UsePinsAsGPIO(void) {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
     GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE);
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -200,7 +200,7 @@ void DisableSWD_UsePinsAsGPIO() {
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
-void EnableSWD_UsePinsAsGPIO() {
+void EnableSWD_UsePinsAsGPIO(void) {
        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
        GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, DISABLE);
 }
@@ -248,7 +248,7 @@ uint8_t digitalRead(uint8_t pin){
     return GPIO_ReadInputDataBit(PinToPort(pin), PinToBitMask(pin));
 }
 
-void initNeopixel()
+void initNeopixel(void)
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
@@ -261,7 +261,7 @@ void initNeopixel()
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 }
 
-void notone(){
+void notone(void){
     TIM_Cmd(TIM2, DISABLE); // Disable timer to stop PWM output
     digitalWrite(PIN_PA1, 0);
 }

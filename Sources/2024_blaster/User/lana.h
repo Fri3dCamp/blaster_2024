@@ -37,32 +37,47 @@
 #define INPUT_PULLDOWN 0x3
 #define OUTPUT_AF_PP 0x4
 
+#define ir_bit_lenght 32
+#define ir_start_high_time 16
+#define ir_start_low_time 8
+#define ir_zero_high_time 1
+#define ir_zero_low_time 1
+#define ir_one_high_time 1
+#define ir_one_low_time 3
+#define ir_stop_high_time 1
+#define ir_stop_low_time 1
+#define pulse_train_lenght 68 //     2 + ir_bit_lenght * 2 + 2
+
 extern volatile uint32_t ir_ticks;
 
-uint32_t micros();
-uint32_t millis();
+
+uint32_t micros(void);
+uint32_t millis(void);
 void delay_ms(uint32_t delay);
 void SYSTICK_Init_Config(u64 ticks);
 
-void enable_ir_carrier();
-void ir_on();
-void ir_off();
+void enable_ir_carrier(void);
+void ir_on(void);
+void ir_off(void);
+
+void enable_ir_rx(void);
+void disable_ir_rx(void);
 
 //void LED_SendBit(uint8_t bit);
 //void LED_SendColour(uint8_t red, uint8_t green, uint8_t blue);
 void SetLed(int i, uint8_t r,uint8_t g,uint8_t b);
-void Write();
+void Write(void);
 GPIO_TypeDef* PinToPort(int pin);
 uint32_t PinToPeriph(int pin);
 uint16_t PinToBitMask(int pin);
-void DisableSWD_UsePinsAsGPIO();
-void EnableSWD_UsePinsAsGPIO();
+void DisableSWD_UsePinsAsGPIO(void);
+void EnableSWD_UsePinsAsGPIO(void);
 void pinMode(uint8_t pin, uint8_t mode);
 void digitalWrite(uint8_t pin, int value);
 uint8_t digitalRead(uint8_t pin);
-void initNeopixel();
+void initNeopixel(void);
 
 void tone(uint16_t frequency);
-void notone();
+void notone(void);
 
 #endif
