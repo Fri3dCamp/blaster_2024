@@ -15,6 +15,11 @@ uint32_t millis()
     return micros() / 1000;
 }
 
+void delay_ms(uint32_t delay)
+{
+    uint32_t ref = millis()+delay;
+    while (millis() < ref) __NOP();
+}
 
 void SYSTICK_Init_Config(u64 ticks)
 {
@@ -110,13 +115,10 @@ int main(void)
     //__disable_irq();
     //__enable_irq();
 
-    uint32_t last = millis();
     while(1)
     {
-        if (millis()-last > 1000) {
-            printf("%d\r\n",millis());
-            last = millis();
-        }
+        delay_ms(1000);
+        printf("%d\r\n",millis());
 
         /*
         //Delay_Ms(1000);
