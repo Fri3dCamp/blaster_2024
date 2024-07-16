@@ -40,29 +40,29 @@
         NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
         NVIC_Init(&NVIC_InitStructure);
-    }
+}
 
-    void EXTI3_IRQHandler( void ) __attribute__((interrupt));
+void EXTI3_IRQHandler( void ) __attribute__((interrupt));
 
-       void EXTI3_IRQHandler(void) {
-           // Check if the interrupt was from PA3
-           if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
-               // Clear the interrupt flag
-               EXTI_ClearITPendingBit(EXTI_Line3);
-               //Data.receive_ISR(1,0,0);
-           }
+   void EXTI3_IRQHandler(void) {
+       // Check if the interrupt was from PA3
+       if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
+           // Clear the interrupt flag
+           EXTI_ClearITPendingBit(EXTI_Line3);
+           handle_ir_interrupt(0);
        }
+   }
 
-    void EXTI9_5_IRQHandler( void ) __attribute__((interrupt));
+void EXTI9_5_IRQHandler( void ) __attribute__((interrupt));
 
-    void EXTI9_5_IRQHandler(void) {
-        // Check if the interrupt was from PA5
-        if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
-            // Clear the interrupt flag
-            EXTI_ClearITPendingBit(EXTI_Line5);
-
-        }
+void EXTI9_5_IRQHandler(void) {
+    // Check if the interrupt was from PA5
+    if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
+        // Clear the interrupt flag
+        EXTI_ClearITPendingBit(EXTI_Line5);
+        handle_ir_interrupt(1); //TODO
     }
+}
 
 int main(void)
 {
@@ -87,7 +87,8 @@ int main(void)
     while(1)
     {
         delay_ms(1000);
-        printf("%d\r\n",millis());
+        uint32_t p = get_ir_packet();
+        if (p > 0) printf("%d\r\n",p);
     }
 }
 

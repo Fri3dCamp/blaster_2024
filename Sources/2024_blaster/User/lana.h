@@ -37,17 +37,6 @@
 #define INPUT_PULLDOWN 0x3
 #define OUTPUT_AF_PP 0x4
 
-#define ir_bit_lenght 32
-#define ir_start_high_time 16
-#define ir_start_low_time 8
-#define ir_zero_high_time 1
-#define ir_zero_low_time 1
-#define ir_one_high_time 1
-#define ir_one_low_time 3
-#define ir_stop_high_time 1
-#define ir_stop_low_time 1
-#define pulse_train_lenght 68 //     2 + ir_bit_lenght * 2 + 2
-
 extern volatile uint32_t ir_ticks;
 
 
