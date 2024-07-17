@@ -54,8 +54,8 @@ void disable_ir_rx(void);
 
 //void LED_SendBit(uint8_t bit);
 //void LED_SendColour(uint8_t red, uint8_t green, uint8_t blue);
-void SetLed(int i, uint8_t r,uint8_t g,uint8_t b);
-void Write(void);
+//void SetLed(int i, uint8_t r,uint8_t g,uint8_t b);
+//void Write(void);
 GPIO_TypeDef* PinToPort(int pin);
 uint32_t PinToPeriph(int pin);
 uint16_t PinToBitMask(int pin);
@@ -64,7 +64,7 @@ void EnableSWD_UsePinsAsGPIO(void);
 void pinMode(uint8_t pin, uint8_t mode);
 void digitalWrite(uint8_t pin, int value);
 uint8_t digitalRead(uint8_t pin);
-void initNeopixel(void);
+//void initNeopixel(void);
 
 void tone(uint16_t frequency);
 void notone(void);

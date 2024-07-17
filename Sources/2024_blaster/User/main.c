@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "lana.h"
 #include "data.h"
+#include "leds.h"
 #include "ch32v20x.h"
 
  void enable_ir_interupt(){
@@ -76,12 +77,17 @@ int main(void)
     //enable_ir_carrier();
 
 
-    pinMode(PIN_PB1, OUTPUT);
-    SYSTICK_Init_Config(26876);
-    //__disable_irq();
-    //__enable_irq();
+    //pinMode(PIN_PB1, OUTPUT);
+    //SYSTICK_Init_Config(26876);
 
-    enable_ir_interupt();
+
+    //enable_ir_interupt();
+
+    init_leds();
+    fill(color(50,0,0));
+    set_led(1,color(0,50,0));
+    set_led(2,color(0,0,50));
+    write_leds();
 
 
     while(1)
