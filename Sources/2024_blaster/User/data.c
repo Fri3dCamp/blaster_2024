@@ -12,12 +12,6 @@ const int ir_stop_high_time = 1;
 const int ir_stop_low_time = 1;
 const int pulse_train_lenght = 68; // 2 + ir_bit_lenght * 2 + 2;
 
-typedef struct {
-    uint32_t raw;
-    uint8_t bits_read;
-    uint32_t last_interrupt;
-} DataReader;
-
 DataReader ir1_reader;
 DataReader ir2_reader;
 
@@ -54,21 +48,39 @@ void handle_ir_interrupt(int channel)
     }
 }
 
-uint32_t get_ir_packet()
+uint32_t calculateCRC(uint32_t raw_packet){
+  uint32_t raw = raw_packet;
+  uint32_t checksum =  ((raw <<  2) & 0b10000000111111110111111100) ^
+            ((raw <<  1) & 0b01111111100000000111111110) ^
+            ((raw <<  0) & 0b00000000111111111111111111) ^
+            ((raw >>  1) & 0b00000000100000000000000000) ^
+            ((raw >>  2) & 0b00000000011111110000000000) ^
+            ((raw >>  3) & 0b00000000111111111000000000) ^
+            ((raw >>  4) & 0b00000011100000001111111100) ^
+            ((raw >>  5) & 0b00000000111111111000000010);
+  checksum = checksum ^ (checksum >> 8) ^ (checksum >> 16) ^ (checksum >> 24);
+  checksum = checksum & 0xFF;
+  raw ^= checksum << 24;
+  return raw;
+}
+
+IrDataPacket get_ir_packet()
 {
+    IrDataPacket p;
+    p.raw = 0;
     if (ir1_reader.bits_read == 32) {
-        uint32_t packet = ir1_reader.raw;
+        p.raw = ir1_reader.raw;
+    }
+    else if (ir2_reader.bits_read == 32) {
+        p.raw = ir2_reader.raw;
+    }
+    if (p.raw > 0) {
         ir1_reader.bits_read = 0;
         ir2_reader.bits_read = 0;
-        return packet;
+        p.raw = calculateCRC(p.raw);
+        if (p.crc != 0) p.raw = 0;
     }
-    if (ir2_reader.bits_read == 32) {
-        uint32_t packet = ir2_reader.raw;
-        ir1_reader.bits_read = 0;
-        ir2_reader.bits_read = 0;
-        return packet;
-    }
-    return 0;
+    return p;
 }
 
 void enable_ir_interupt(){

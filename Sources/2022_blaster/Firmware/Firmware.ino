@@ -50,7 +50,7 @@ void setup()
   blinkIfNoTeamSelector();
   modeSelection();
 
-  Animations::mute(); //TODO
+  //Animations::mute(); //TODO
   Animations::blaster_start();
 
   player_id = EEPROM.read(0);

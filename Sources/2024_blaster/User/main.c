@@ -35,9 +35,9 @@ int main(void)
 
     while(1)
     {
-        delay_ms(1000);
-        uint32_t p = get_ir_packet();
-        if (p > 0) printf("%d\r\n",p);
+        delay_ms(10);
+        IrDataPacket p = get_ir_packet();
+        if (p.raw > 0) printf("%d\r\n",p.team);
 
     }
 }

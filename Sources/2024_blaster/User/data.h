@@ -4,9 +4,29 @@
 
 #include <stdint.h>
 
+typedef struct {
+    uint32_t raw;
+    uint8_t bits_read;
+    uint32_t last_interrupt;
+} DataReader;
+
+typedef union
+{
+  uint32_t raw;
+  struct
+  {
+    uint8_t channel: 1;
+    uint8_t team: 3;
+    uint8_t action: 2;
+    uint8_t action_param: 4;
+    uint16_t player_id: 12;
+    uint8_t crc: 8;
+  };
+} IrDataPacket;
+
 void enable_ir_interupt();
 void handle_ir_interrupt(int channel);
-uint32_t get_ir_packet();
+IrDataPacket get_ir_packet();
 
 
 #endif
