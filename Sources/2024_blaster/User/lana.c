@@ -4,11 +4,12 @@
 
 #define N 14
 uint8_t rgbArray[3 * N]; // Each color is 3 bytes
-volatile uint32_t ir_ticks = 0;
+volatile uint64_t ticks = 0;
+volatile uint64_t tick_interval = 0;
 
 uint32_t micros(void)
 {
-    return (ir_ticks * 560) + (SysTick->CNT / 48);
+    return (ticks + SysTick->CNT) / (SystemCoreClock / 1000000);
 }
 
 uint32_t millis(void)
@@ -18,7 +19,7 @@ uint32_t millis(void)
 
 void delay_ms(uint32_t delay)
 {
-    uint32_t ref = millis()+delay;
+    uint64_t ref = millis()+delay;
     while (millis() < ref) __NOP();
 }
 
@@ -31,6 +32,7 @@ void SYSTICK_Init_Config(u64 ticks)
 
     NVIC_SetPriority(SysTicK_IRQn, 1);
     NVIC_EnableIRQ(SysTicK_IRQn);
+    tick_interval = ticks;
 }
 
 
@@ -41,7 +43,7 @@ void SysTick_Handler(void)
     SysTick->SR = 0;
 
     // update counter
-    ir_ticks++;
+    ticks+=tick_interval;
     transmit_ISR();
 }
 
