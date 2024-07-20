@@ -225,8 +225,7 @@ void enable_ir_interupt(){
     // Enable GPIOA clock
     RCC_AHBPeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
-    pinMode(PIN_PA3, INPUT_PULLUP);
-    pinMode(PIN_PA5, INPUT_PULLUP);
+
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource5);

@@ -36,11 +36,15 @@ void setup()
     pinMode(PIN_PB1, OUTPUT);
     digitalWrite(PIN_PB1, LOW);
 
+    //trigger button
     pinMode(TRIGGER, INPUT_PULLUP);
 
     //delay timer and TX ISR
     SYSTICK_Init_Config(26876);
 
+    // IR Receivers
+    pinMode(PIN_PA3, INPUT_PULLUP);
+    pinMode(PIN_PA5, INPUT_PULLUP);
     enable_ir_interupt();
     enable_rx();
 
@@ -78,10 +82,6 @@ void startup_animation()
     notone();
     delay_ms(500);
     fill(color(0,0,0));
-    write_leds();
-
-    set_led(1,color(0,50,0));
-    set_led(2,color(0,0,50));
     write_leds();
 }
 
