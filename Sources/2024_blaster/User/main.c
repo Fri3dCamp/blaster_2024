@@ -7,8 +7,8 @@
 #define TRIGGER PIN_PA6
 
 int hitpoints = 4;
-int fixed_color = 0;
-int hardware_team = 0;
+
+
 
 
 int get_hw_team() {

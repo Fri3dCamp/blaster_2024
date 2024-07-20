@@ -138,10 +138,6 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 ./User/main.o
  .text.get_hw_team
                 0x0000000000000000       0x3e ./User/main.o
- .sbss.fixed_color
-                0x0000000000000000        0x4 ./User/main.o
- .sbss.hardware_team
-                0x0000000000000000        0x4 ./User/main.o
  .sdata.hitpoints
                 0x0000000000000000        0x4 ./User/main.o
  .text          0x0000000000000000        0x0 ./User/system_ch32v20x.o
@@ -1985,22 +1981,22 @@ END GROUP
                 0x0000000020002800                PROVIDE (_eusrstack = .)
 OUTPUT(Blaster2024.elf elf32-littleriscv)
 
-.debug_info     0x0000000000000000     0xff74
+.debug_info     0x0000000000000000     0xff50
  .debug_info    0x0000000000000000      0x962 ./User/ch32v20x_it.o
  .debug_info    0x0000000000000962     0x1a37 ./User/data.o
  .debug_info    0x0000000000002399     0x1a2b ./User/lana.o
  .debug_info    0x0000000000003dc4      0xee6 ./User/leds.o
- .debug_info    0x0000000000004caa     0x1009 ./User/main.o
- .debug_info    0x0000000000005cb3      0xb3b ./User/system_ch32v20x.o
- .debug_info    0x00000000000067ee       0x22 ./Startup/startup_ch32v20x_D6.o
- .debug_info    0x0000000000006810      0xa94 ./Peripheral/src/ch32v20x_dbgmcu.o
- .debug_info    0x00000000000072a4      0xc0d ./Peripheral/src/ch32v20x_exti.o
- .debug_info    0x0000000000007eb1     0x1354 ./Peripheral/src/ch32v20x_gpio.o
- .debug_info    0x0000000000009205      0xe6c ./Peripheral/src/ch32v20x_misc.o
- .debug_info    0x000000000000a071     0x125c ./Peripheral/src/ch32v20x_rcc.o
- .debug_info    0x000000000000b2cd     0x2abe ./Peripheral/src/ch32v20x_tim.o
- .debug_info    0x000000000000dd8b     0x1340 ./Peripheral/src/ch32v20x_usart.o
- .debug_info    0x000000000000f0cb      0xea9 ./Debug/debug.o
+ .debug_info    0x0000000000004caa      0xfe5 ./User/main.o
+ .debug_info    0x0000000000005c8f      0xb3b ./User/system_ch32v20x.o
+ .debug_info    0x00000000000067ca       0x22 ./Startup/startup_ch32v20x_D6.o
+ .debug_info    0x00000000000067ec      0xa94 ./Peripheral/src/ch32v20x_dbgmcu.o
+ .debug_info    0x0000000000007280      0xc0d ./Peripheral/src/ch32v20x_exti.o
+ .debug_info    0x0000000000007e8d     0x1354 ./Peripheral/src/ch32v20x_gpio.o
+ .debug_info    0x00000000000091e1      0xe6c ./Peripheral/src/ch32v20x_misc.o
+ .debug_info    0x000000000000a04d     0x125c ./Peripheral/src/ch32v20x_rcc.o
+ .debug_info    0x000000000000b2a9     0x2abe ./Peripheral/src/ch32v20x_tim.o
+ .debug_info    0x000000000000dd67     0x1340 ./Peripheral/src/ch32v20x_usart.o
+ .debug_info    0x000000000000f0a7      0xea9 ./Debug/debug.o
 
 .debug_abbrev   0x0000000000000000     0x2d25
  .debug_abbrev  0x0000000000000000      0x1cf ./User/ch32v20x_it.o
@@ -2085,7 +2081,7 @@ OUTPUT(Blaster2024.elf elf32-littleriscv)
  .debug_line    0x0000000000009896      0xe83 ./Peripheral/src/ch32v20x_usart.o
  .debug_line    0x000000000000a719      0x55f ./Debug/debug.o
 
-.debug_str      0x0000000000000000     0x2a96
+.debug_str      0x0000000000000000     0x2a7c
  .debug_str     0x0000000000000000      0x550 ./User/ch32v20x_it.o
                                         0x5b7 (size before relaxing)
  .debug_str     0x0000000000000550      0xbc5 ./User/data.o
@@ -2094,27 +2090,27 @@ OUTPUT(Blaster2024.elf elf32-littleriscv)
                                         0xf62 (size before relaxing)
  .debug_str     0x000000000000131b       0x78 ./User/leds.o
                                         0x7b2 (size before relaxing)
- .debug_str     0x0000000000001393       0xc0 ./User/main.o
-                                        0x6dc (size before relaxing)
- .debug_str     0x0000000000001453       0xd1 ./User/system_ch32v20x.o
+ .debug_str     0x0000000000001393       0xa6 ./User/main.o
+                                        0x6c2 (size before relaxing)
+ .debug_str     0x0000000000001439       0xd1 ./User/system_ch32v20x.o
                                         0x6a0 (size before relaxing)
- .debug_str     0x0000000000001524       0x2d ./Startup/startup_ch32v20x_D6.o
+ .debug_str     0x000000000000150a       0x2d ./Startup/startup_ch32v20x_D6.o
                                          0x6a (size before relaxing)
- .debug_str     0x0000000000001551       0x87 ./Peripheral/src/ch32v20x_dbgmcu.o
+ .debug_str     0x0000000000001537       0x87 ./Peripheral/src/ch32v20x_dbgmcu.o
                                         0x647 (size before relaxing)
- .debug_str     0x00000000000015d8       0xc6 ./Peripheral/src/ch32v20x_exti.o
+ .debug_str     0x00000000000015be       0xc6 ./Peripheral/src/ch32v20x_exti.o
                                         0x78e (size before relaxing)
- .debug_str     0x000000000000169e      0x224 ./Peripheral/src/ch32v20x_gpio.o
+ .debug_str     0x0000000000001684      0x224 ./Peripheral/src/ch32v20x_gpio.o
                                         0x9bd (size before relaxing)
- .debug_str     0x00000000000018c2       0x69 ./Peripheral/src/ch32v20x_misc.o
+ .debug_str     0x00000000000018a8       0x69 ./Peripheral/src/ch32v20x_misc.o
                                         0xa7f (size before relaxing)
- .debug_str     0x000000000000192b      0x3b1 ./Peripheral/src/ch32v20x_rcc.o
+ .debug_str     0x0000000000001911      0x3b1 ./Peripheral/src/ch32v20x_rcc.o
                                         0xabd (size before relaxing)
- .debug_str     0x0000000000001cdc      0x947 ./Peripheral/src/ch32v20x_tim.o
+ .debug_str     0x0000000000001cc2      0x947 ./Peripheral/src/ch32v20x_tim.o
                                        0x12ba (size before relaxing)
- .debug_str     0x0000000000002623      0x3ef ./Peripheral/src/ch32v20x_usart.o
+ .debug_str     0x0000000000002609      0x3ef ./Peripheral/src/ch32v20x_usart.o
                                         0xaeb (size before relaxing)
- .debug_str     0x0000000000002a12       0x84 ./Debug/debug.o
+ .debug_str     0x00000000000029f8       0x84 ./Debug/debug.o
                                         0x8fa (size before relaxing)
 
 .comment        0x0000000000000000       0x33
