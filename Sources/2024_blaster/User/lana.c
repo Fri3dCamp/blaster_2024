@@ -1,5 +1,6 @@
 #include "lana.h"
 #include "stdlib.h"
+#include "data.h"
 
 #define N 14
 uint8_t rgbArray[3 * N]; // Each color is 3 bytes
@@ -41,57 +42,8 @@ void SysTick_Handler(void)
 
     // update counter
     ir_ticks++;
-
-
-
+    transmit_ISR();
 }
-
-void enable_ir_carrier(void)
-{
-    // Enable GPIO and Timer Clocks
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-
-    GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; // Alternate Function Push Pull Mode
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-    TIM_OCInitTypeDef  TIM_OCInitStructure;
-
-    // Time base configuration
-    TIM_TimeBaseStructure.TIM_Period = 1266;
-    TIM_TimeBaseStructure.TIM_Prescaler = 0;
-    TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-
-    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
-
-    // PWM1 Mode configuration: Channel 2 (Assuming PA1 is connected to TIM2 CH2)
-    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-    TIM_OCInitStructure.TIM_Pulse = 600; // 50% duty cycle
-    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-
-    TIM_OC4Init(TIM3, &TIM_OCInitStructure);
-    TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-    TIM_ARRPreloadConfig(TIM3, ENABLE);
-}
-
-void ir_on(void){
-    pinMode(PIN_PB1, OUTPUT_AF_PP);
-    TIM_Cmd(TIM3, ENABLE);
-}
-
-void ir_off(void) {
-    TIM_Cmd(TIM3, DISABLE);
-    pinMode(PIN_PB1, OUTPUT);
-    digitalWrite(PIN_PB1, LOW);
-}
-
 
 GPIO_TypeDef* PinToPort(int pin)
 {

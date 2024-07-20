@@ -27,6 +27,9 @@ typedef union
 void enable_ir_interupt();
 void handle_ir_interrupt(int channel);
 IrDataPacket get_ir_packet();
-
+void send_ir_packet(IrDataPacket p);
+void enable_rx();
+void disable_rx();
+void transmit_ISR();
 
 #endif

@@ -10,12 +10,17 @@ const int ir_one_high_time = 1;
 const int ir_one_low_time = 3;
 const int ir_stop_high_time = 1;
 const int ir_stop_low_time = 1;
-const int pulse_train_lenght = 68; // 2 + ir_bit_lenght * 2 + 2;
+#define pulse_train_lenght 68 // 2 + ir_bit_lenght * 2 + 2;
 
-DataReader ir1_reader;
-DataReader ir2_reader;
+volatile DataReader ir1_reader;
+volatile DataReader ir2_reader;
+volatile int rx_enabled = 0;
 
-void handle_pulse(DataReader *dr, uint32_t time){
+volatile int pulse_train[pulse_train_lenght];
+volatile int8_t pulse_pointer;
+volatile int transmit_ir = 0;
+
+void handle_pulse(volatile DataReader *dr, uint32_t time){
     if (dr->bits_read >= 32) {
        return;
    }
@@ -64,8 +69,7 @@ uint32_t calculateCRC(uint32_t raw_packet){
   return raw;
 }
 
-IrDataPacket get_ir_packet()
-{
+IrDataPacket get_ir_packet(){
     IrDataPacket p;
     p.raw = 0;
     if (ir1_reader.bits_read == 32) {
@@ -82,6 +86,140 @@ IrDataPacket get_ir_packet()
     }
     return p;
 }
+
+void enable_rx() {
+    ir1_reader.bits_read=0;
+    ir2_reader.bits_read=0;
+    rx_enabled = 1;
+}
+
+void disable_rx() {
+    rx_enabled = 0;
+}
+
+int bitRead(uint32_t p, int index){
+    uint32_t mask = (uint32_t)1 << index;
+
+    // Extract the bit value (0 or 1)
+    return (p & mask) ? 1 : 0;
+}
+
+void prepare_pulse_train(uint32_t raw_packet)
+{
+  int index = 0;
+  pulse_train[index++] = ir_start_high_time;
+  pulse_train[index++] = ir_start_low_time;
+  for (int i = 0; i < ir_bit_lenght; i++)
+  {
+    if (bitRead(raw_packet, i))
+    {
+      pulse_train[index++] = ir_one_high_time;
+      pulse_train[index++] = ir_one_low_time;
+    }
+    else
+    {
+      pulse_train[index++] = ir_zero_high_time;
+      pulse_train[index++] = ir_zero_low_time;
+    }
+  }
+  pulse_train[index++] = ir_stop_high_time;
+  pulse_train[index++] = ir_stop_low_time;
+
+  pulse_pointer = 0;
+}
+
+void enable_ir_carrier(void)
+{
+    // Enable GPIO and Timer Clocks
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; // Alternate Function Push Pull Mode
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+    TIM_OCInitTypeDef  TIM_OCInitStructure;
+
+    // Time base configuration
+    TIM_TimeBaseStructure.TIM_Period = 1266;
+    TIM_TimeBaseStructure.TIM_Prescaler = 0;
+    TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+
+    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+
+    // PWM1 Mode configuration: Channel 2 (Assuming PA1 is connected to TIM2 CH2)
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+    TIM_OCInitStructure.TIM_Pulse = 600; // 50% duty cycle
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+
+    TIM_OC4Init(TIM3, &TIM_OCInitStructure);
+    TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+    TIM_ARRPreloadConfig(TIM3, ENABLE);
+}
+
+void ir_on(void){
+    pinMode(PIN_PB1, OUTPUT_AF_PP);
+    TIM_Cmd(TIM3, ENABLE);
+}
+
+void ir_off(void) {
+    TIM_Cmd(TIM3, DISABLE);
+    pinMode(PIN_PB1, OUTPUT);
+    digitalWrite(PIN_PB1, LOW);
+}
+
+void send_ir_packet(IrDataPacket p)
+{
+    disable_rx();
+    p.crc = 0;
+    p.raw = calculateCRC(p.raw);
+
+    prepare_pulse_train(p.raw);
+
+    enable_ir_carrier();
+    ir_off();
+    transmit_ir = 1;
+    while (transmit_ir);
+
+    enable_rx();
+}
+
+
+
+void transmit_ISR()
+{
+  if (transmit_ir)
+  {
+    if (pulse_pointer % 2 == 1) // would & 0b1 be faster?
+    {
+      if (transmit_ir) ir_off();
+    }
+    else
+    {
+      if (transmit_ir) ir_on();
+
+    }
+    pulse_train[pulse_pointer]--; // count down
+
+    // if we reached the end go to the next pulse
+    if (pulse_train[pulse_pointer] <= 0)
+      pulse_pointer++;
+
+    // unless we already were on the last pulse
+    if (pulse_pointer >= pulse_train_lenght)
+    {
+      transmit_ir = 0;
+    }
+  }
+}
+
+
 
 void enable_ir_interupt(){
     // Enable GPIOA clock
@@ -124,14 +262,14 @@ void enable_ir_interupt(){
 
 void EXTI3_IRQHandler( void ) __attribute__((interrupt));
 
-   void EXTI3_IRQHandler(void) {
-       // Check if the interrupt was from PA3
-       if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
-           // Clear the interrupt flag
-           EXTI_ClearITPendingBit(EXTI_Line3);
-           handle_ir_interrupt(0);
-       }
+void EXTI3_IRQHandler(void) {
+   // Check if the interrupt was from PA3
+   if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
+       // Clear the interrupt flag
+       EXTI_ClearITPendingBit(EXTI_Line3);
+       handle_ir_interrupt(0);
    }
+}
 
 void EXTI9_5_IRQHandler( void ) __attribute__((interrupt));
 

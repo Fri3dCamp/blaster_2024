@@ -24,7 +24,8 @@ User/lana.o: ../User/lana.c ../User/lana.h \
  C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\Peripheral\inc/ch32v20x_usart.h \
  C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\Peripheral\inc/ch32v20x_wwdg.h \
  C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\User/ch32v20x_it.h \
- C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\Peripheral\inc/ch32v20x_misc.h
+ C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\Peripheral\inc/ch32v20x_misc.h \
+ ../User/data.h
 
 ../User/lana.h:
 
@@ -79,3 +80,5 @@ C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\Peripheral\inc/ch32v20x
 C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\User/ch32v20x_it.h:
 
 C:\Users\hans\Projects\blaster_2024\Sources\2024_blaster\Peripheral\inc/ch32v20x_misc.h:
+
+../User/data.h:
