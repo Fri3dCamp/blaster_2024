@@ -37,7 +37,7 @@
 #define INPUT_PULLDOWN 0x3
 #define OUTPUT_AF_PP 0x4
 
-extern volatile uint32_t ir_ticks;
+extern volatile int triggered;
 
 
 uint32_t micros(void);

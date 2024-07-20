@@ -6,6 +6,7 @@
 uint8_t rgbArray[3 * N]; // Each color is 3 bytes
 volatile uint64_t ticks = 0;
 volatile uint64_t tick_interval = 0;
+volatile int triggered = 0; //todo: move to main, pass function to ISR to update
 
 uint32_t micros(void)
 {
@@ -44,6 +45,7 @@ void SysTick_Handler(void)
 
     // update counter
     ticks+=tick_interval;
+    if (!digitalRead(PIN_PA6)) triggered++;
     transmit_ISR();
 }
 

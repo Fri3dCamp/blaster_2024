@@ -4,10 +4,12 @@
 #include "leds.h"
 #include "ch32v20x.h"
 
+#define TRIGGER PIN_PA6
 
 int hitpoints = 4;
 int fixed_color = 0;
 int hardware_team = 0;
+
 
 int get_hw_team() {
     if (!digitalRead(PIN_PB6)) return 1;
@@ -33,6 +35,8 @@ void setup()
     //Ir out
     pinMode(PIN_PB1, OUTPUT);
     digitalWrite(PIN_PB1, LOW);
+
+    pinMode(TRIGGER, INPUT_PULLUP);
 
     //delay timer and TX ISR
     SYSTICK_Init_Config(26876);
@@ -87,7 +91,7 @@ int main(void)
 
     startup_animation();
 
-    int player = 0;
+    /*int player = 0;
 
     while(1){
         printf("%d\r\n",get_hw_team());
@@ -112,20 +116,25 @@ int main(void)
             hardware_team = get_hw_team();
         }
         delay_ms(100);
-    }
+    }*/
 
     while(1)
     {
-        player++;
+        //player++;
         delay_ms(1000);
-        IrDataPacket p = get_ir_packet();
+        printf("triggered %d\r\n",triggered);
+        while (triggered) {
+            triggered = 0;
+            delay_ms(50);
+        }
+        /*IrDataPacket p = get_ir_packet();
         if (p.raw > 0) printf("%d\r\n",p.team);
         p.raw = 0;
         p.team=1;
         p.action=1;
         p.channel=0;
         p.player_id = player;
-        send_ir_packet(p);
+        send_ir_packet(p);*/
 
 
 
