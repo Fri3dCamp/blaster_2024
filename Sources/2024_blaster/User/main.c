@@ -7,15 +7,30 @@
 #define TRIGGER PIN_PA6
 
 int hitpoints = 4;
+int last_hw_team = -1; //to detect team change
 
-
-
+uint32_t team_to_color(int team){
+    uint32_t team_color = color(
+            team & 1?128:0,
+            team & 2?128:0,
+            team & 4?128:0
+                    );
+   return team_color;
+}
 
 int get_hw_team() {
     if (!digitalRead(PIN_PB6)) return 1;
     if (!digitalRead(PIN_PB7)) return 2;
     if (!digitalRead(PIN_PA0)) return 4;
     else return 0;
+}
+
+int hw_team_changed(){
+    if (get_hw_team() != last_hw_team) {
+        last_hw_team = get_hw_team();
+        return last_hw_team;
+    }
+    return 0;
 }
 
 void setup()
@@ -85,48 +100,72 @@ void startup_animation()
     write_leds();
 }
 
+void team_change_animation()
+{
+    tone(G * (1L << 4) / 100);
+    delay_ms(35);
+    tone(G * (1L << 5) / 100);
+    delay_ms(35);
+    tone(G * (1L << 6) / 100);
+    delay_ms(35);
+    notone();
+}
+
+void shoot_animation(){ //needs work
+    uint32_t color = team_to_color(last_hw_team);
+
+    fill(0);
+    set_led(1, color);
+    write_leds();
+    tone(400);
+    delay_ms(10);
+
+    fill(0);
+    set_led(2, color);
+    write_leds();
+    tone(500);
+    delay_ms(50);
+
+    fill(0);
+    set_led(3, color);
+    write_leds();
+    tone(800);
+    delay_ms(80);
+
+    fill(0);
+    set_led(4, color);
+    write_leds();
+    tone(1000);
+    delay_ms(300);
+
+    notone();
+}
+
+void display_status(){
+    fill(color(0,0,0));
+    for (int i=0; i<= hitpoints; i++)
+        set_led(i, team_to_color(last_hw_team));
+    write_leds();
+}
+
+void game_loop();
+
 int main(void)
 {
     setup();
 
-    startup_animation();
+    //startup_animation();
 
-    /*int player = 0;
+    //game_loop();
+    tone(400);
+    delay_ms(500);
+    for(int i=0; i< 100; i++){
+    change_tone(40+40*i);
+    delay_ms(5);
+    }
+    notone();
 
-    while(1){
-        printf("%d\r\n",get_hw_team());
-        switch (get_hw_team()) {
-            case 1:
-                fill(color(50,0,0));
-                break;
-            case 2:
-                fill(color(0,50,0));
-                break;
-            case 4:
-                fill(color(0,0,50));
-                break;
-        }
 
-        write_leds();
-        if (get_hw_team() != hardware_team)
-        {
-            //tone(400);
-            delay_ms(200);
-            notone();
-            hardware_team = get_hw_team();
-        }
-        delay_ms(100);
-    }*/
-
-    while(1)
-    {
-        //player++;
-        delay_ms(1000);
-        printf("triggered %d\r\n",triggered);
-        while (triggered) {
-            triggered = 0;
-            delay_ms(50);
-        }
         /*IrDataPacket p = get_ir_packet();
         if (p.raw > 0) printf("%d\r\n",p.team);
         p.raw = 0;
@@ -136,9 +175,33 @@ int main(void)
         p.player_id = player;
         send_ir_packet(p);*/
 
-
-
-    }
 }
 
+void game_loop() {
+    while (1) {
+        if (hw_team_changed()){
+            // debounce [C0Dq4jE-Ixw]
+            delay_ms(10);
+            while (hw_team_changed()) delay_ms(10);
+            team_change_animation();
+        }
+
+        if (triggered) {
+            while (triggered) {
+                triggered = 0;
+                delay_ms(10);
+            };
+            //send_packet();
+            shoot_animation();
+        }
+        /*
+        else if (triggered() > 3000) ChangeMode(Chatter);
+        if (ir_data_ready())
+        {
+            handle_ir_data(); //validate, animate
+        }
+        */
+        display_status();
+    }
+}
 

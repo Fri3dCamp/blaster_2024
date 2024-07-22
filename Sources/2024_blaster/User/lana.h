@@ -42,6 +42,7 @@ extern volatile int triggered;
 
 uint32_t micros(void);
 uint32_t millis(void);
+void delay_micros(uint32_t delay);
 void delay_ms(uint32_t delay);
 void SYSTICK_Init_Config(u64 ticks);
 
@@ -60,6 +61,41 @@ void digitalWrite(uint8_t pin, int value);
 uint8_t digitalRead(uint8_t pin);
 //void initNeopixel(void);
 
+
+enum Note
+{
+  DO = 3270,
+  DO_S = 3465,
+  C = 3270,
+  C_S = 3465,
+
+  RE = 3671,
+  RE_S = 3889,
+  D = 3671,
+  D_S = 3889,
+
+  MI = 4120,
+  E = 4120,
+
+  FA = 4365,
+  FA_S = 4625,
+  F = 4365,
+  F_S = 4625,
+
+  SOL = 4900,
+  SOL_S = 5191,
+  G = 4900,
+  G_S = 5191,
+
+  LA = 5500,
+  LA_S = 5827,
+  A = 5500,
+  A_S = 5827,
+
+  SI = 6174,
+  B = 6174
+};
+void change_tone(uint16_t frequency);
 void tone(uint16_t frequency);
 void notone(void);
 

@@ -18,6 +18,12 @@ uint32_t millis(void)
     return micros() / 1000;
 }
 
+void delay_micros(uint32_t delay)
+{
+    uint64_t ref = micros()+delay;
+    while (micros() < ref) __NOP();
+}
+
 void delay_ms(uint32_t delay)
 {
     uint64_t ref = millis()+delay;
@@ -136,6 +142,20 @@ uint8_t digitalRead(uint8_t pin){
 void notone(void){
     TIM_Cmd(TIM2, DISABLE); // Disable timer to stop PWM output
     digitalWrite(PIN_PA1, 0);
+}
+
+void change_tone(uint16_t frequency){ //needs refactoring when time permits.
+    uint32_t test = SystemCoreClock/frequency;
+
+    uint16_t PrescalerValue;
+    if (test / 100 > 65000) PrescalerValue = 65000;
+    else PrescalerValue = (uint16_t) test/100;
+
+    uint16_t period = (uint16_t)(SystemCoreClock/PrescalerValue/frequency);
+
+    TIM2->PSC = PrescalerValue;
+    TIM2->ATRLR = period;
+    TIM2->CH2CVR = period/2;
 }
 
 void tone(uint16_t frequency){
