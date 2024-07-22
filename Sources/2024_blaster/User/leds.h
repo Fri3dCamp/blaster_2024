@@ -2,8 +2,7 @@
 #define LEDS_H
 
 /* TODO
- * color => RGB()
- * fill => fill_leds()
+ * clean up code and naming
  * rainbow(index) > color
  * */
 

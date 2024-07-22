@@ -40,8 +40,8 @@
 extern volatile int triggered;
 
 
-uint32_t micros(void);
-uint32_t millis(void);
+uint64_t micros(void);
+uint64_t millis(void);
 void delay_micros(uint32_t delay);
 void delay_ms(uint32_t delay);
 void SYSTICK_Init_Config(u64 ticks);

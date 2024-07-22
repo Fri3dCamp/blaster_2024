@@ -117,28 +117,44 @@ void shoot_animation(){ //needs work
     fill(0);
     set_led(1, color);
     write_leds();
-    tone(400);
     delay_ms(10);
 
     fill(0);
     set_led(2, color);
     write_leds();
-    tone(500);
     delay_ms(50);
 
     fill(0);
     set_led(3, color);
     write_leds();
-    tone(800);
     delay_ms(80);
 
     fill(0);
     set_led(4, color);
     write_leds();
-    tone(1000);
-    delay_ms(300);
 
-    notone();
+    int team = last_hw_team;
+    int mod = team * 2;
+
+    for (int i = 0; i < 4; i++)
+    {
+        tone(5000);
+      for (int f = 5000; f > 1000; f -= 300)
+      {
+        change_tone(f+team*500);
+        delay_ms(10);
+      }
+      notone();
+    }
+
+    /*tone(5000);
+    for (int f = 8000 / mod; f > 100 * mod; f -= 50)
+    {
+      change_tone(f);
+      delay_ms(5+mod);
+    }
+
+   notone();*/
 }
 
 void display_status(){
@@ -154,16 +170,9 @@ int main(void)
 {
     setup();
 
-    //startup_animation();
+    startup_animation();
 
-    //game_loop();
-    tone(400);
-    delay_ms(500);
-    for(int i=0; i< 100; i++){
-    change_tone(40+40*i);
-    delay_ms(5);
-    }
-    notone();
+    game_loop();
 
 
         /*IrDataPacket p = get_ir_packet();

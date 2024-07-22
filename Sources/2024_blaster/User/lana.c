@@ -8,12 +8,12 @@ volatile uint64_t ticks = 0;
 volatile uint64_t tick_interval = 0;
 volatile int triggered = 0; //todo: move to main, pass function to ISR to update
 
-uint32_t micros(void)
+uint64_t micros(void)
 {
     return (ticks + SysTick->CNT) / (SystemCoreClock / 1000000);
 }
 
-uint32_t millis(void)
+uint64_t millis(void)
 {
     return micros() / 1000;
 }
@@ -141,6 +141,8 @@ uint8_t digitalRead(uint8_t pin){
 
 void notone(void){
     TIM_Cmd(TIM2, DISABLE); // Disable timer to stop PWM output
+    TIM2->CH2CVR = 0;
+    pinMode(PIN_PA1, OUTPUT);
     digitalWrite(PIN_PA1, 0);
 }
 
