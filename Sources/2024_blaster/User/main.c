@@ -134,7 +134,6 @@ void shoot_animation(){ //needs work
     write_leds();
 
     int team = last_hw_team;
-    int mod = team * 2;
 
     for (int i = 0; i < 4; i++)
     {
@@ -175,14 +174,8 @@ int main(void)
     game_loop();
 
 
-        /*IrDataPacket p = get_ir_packet();
-        if (p.raw > 0) printf("%d\r\n",p.team);
-        p.raw = 0;
-        p.team=1;
-        p.action=1;
-        p.channel=0;
-        p.player_id = player;
-        send_ir_packet(p);*/
+       /*            IrDataPacket p = get_ir_packet();
+                   if (p.raw > 0) printf("%d\r\n",p.team);*/
 
 }
 
@@ -200,11 +193,18 @@ void game_loop() {
                 triggered = 0;
                 delay_ms(10);
             };
-            //send_packet();
+
+            IrDataPacket p;
+           p.raw = 0;
+           p.team=last_hw_team;
+           p.action=1;
+           p.channel=0;
+           p.player_id = 0;
+           send_ir_packet(p);
+
             shoot_animation();
         }
         /*
-        else if (triggered() > 3000) ChangeMode(Chatter);
         if (ir_data_ready())
         {
             handle_ir_data(); //validate, animate
