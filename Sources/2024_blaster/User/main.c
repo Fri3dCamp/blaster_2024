@@ -3,10 +3,13 @@
 #include "data.h"
 #include "leds.h"
 #include "ch32v20x.h"
+#include "stdlib.h"
 
 #define TRIGGER PIN_PA6
 
-int hitpoints = 4;
+#define DEFAULTHP 4
+int hitpoints;
+
 int last_hw_team = -1; //to detect team change
 
 uint32_t team_to_color(int team){
@@ -156,6 +159,36 @@ void shoot_animation(){ //needs work
    notone();*/
 }
 
+void crash_animation(uint8_t team, uint32_t hit_timeout)
+{
+  fill(team_to_color(team));
+  write_leds();
+
+  for (int i = 1000; i > 0; i -= 20)
+  {
+    int min = 500 - i / 3;
+    int max = 8000 - i * 9;
+    tone(min+rand()%(max-min));
+    delay_ms(4);
+  }
+  for (int i = 0; i < 1000; i+=2)
+  {
+      int min = 500 - i / 3;
+      int max = 8000 - i * 9;
+      tone(min+rand()%(max-min));
+      delay_ms(1);
+  }
+  notone();
+  fill(team_to_color(team));
+  write_leds();
+  for (int i = 4; i > 0; i--){
+      set_led(i, team_to_color(last_hw_team));
+      delay_ms(hit_timeout/4);
+      write_leds();
+  }
+
+}
+
 void display_status(){
     fill(color(0,0,0));
     for (int i=0; i<= hitpoints; i++)
@@ -175,11 +208,6 @@ int main(void)
     startup_animation();
 
     game_loop();
-
-
-       /*            IrDataPacket p = get_ir_packet();
-                   if (p.raw > 0) printf("%d\r\n",p.team);*/
-
 }
 
 /* run this loop as long a the blaster is not detected.
@@ -195,12 +223,12 @@ void no_blaster_loop(){
         fill(color(0,0,0));
         write_leds();
         delay_ms(250);
-
     }
 
 }
 
 void game_loop() {
+    hitpoints = DEFAULTHP;
     while (1) {
         if (hw_team_changed()){
             // debounce [C0Dq4jE-Ixw]
@@ -214,23 +242,43 @@ void game_loop() {
                 triggered = 0;
                 delay_ms(10);
             };
-
             IrDataPacket p;
-           p.raw = 0;
-           p.team=last_hw_team;
-           p.action=1;
-           p.channel=0;
-           p.player_id = 0;
-           send_ir_packet(p);
-
+            p.raw = 0;
+            p.team=last_hw_team;
+            p.action=1;
+            p.channel=0;
+            p.player_id = 0;
+            send_ir_packet(p);
             shoot_animation();
         }
-        /*
         if (ir_data_ready())
         {
-            handle_ir_data(); //validate, animate
+            IrDataPacket p = get_ir_packet();
+            if (p.team != last_hw_team){
+
+                if (hitpoints) {
+                    hitpoints--;
+                    if (hitpoints) crash_animation(p.team, 2000);
+                    else crash_animation(p.team, 20);
+                }
+                get_ir_packet();
+            }
         }
-        */
+        if (hitpoints == 0) {
+            for (int k=1; k< 5; k++){
+                for (int j =0; j< 50; j++)
+                {
+                    set_led(1+rand()%4, team_to_color(rand()%8));
+                    for (int kk=1; kk<k; kk++) set_led(kk, team_to_color(last_hw_team));
+                    write_leds();
+                    delay_ms(50);
+                }
+            }
+            hitpoints = DEFAULTHP;
+            get_ir_packet();
+            team_change_animation();
+            triggered = 0;
+        }
         display_status();
     }
 }

@@ -146,7 +146,7 @@ void notone(void){
     digitalWrite(PIN_PA1, 0);
 }
 
-void change_tone(uint16_t frequency){ //needs refactoring when time permits.
+void change_tone(uint16_t frequency){
     uint32_t test = SystemCoreClock/frequency;
 
     uint16_t PrescalerValue;
@@ -158,9 +158,16 @@ void change_tone(uint16_t frequency){ //needs refactoring when time permits.
     TIM2->PSC = PrescalerValue;
     TIM2->ATRLR = period;
     TIM2->CH2CVR = period/2;
+    TIM2->CNT = period/2; //hack, to stop some sound glitches
 }
 
 void tone(uint16_t frequency){
+    if (TIM2->CTLR1 & TIM_CEN)
+    {
+        change_tone(frequency);
+        return;
+    };
+
     //Buzzer:  PA1, T2_CH2
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);

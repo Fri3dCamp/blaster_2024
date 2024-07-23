@@ -69,6 +69,10 @@ uint32_t calculateCRC(uint32_t raw_packet){
   return raw;
 }
 
+int ir_data_ready(){
+   return (ir1_reader.bits_read == 32 || ir2_reader.bits_read == 32);
+}
+
 IrDataPacket get_ir_packet(){
     IrDataPacket p;
     p.raw = 0;
