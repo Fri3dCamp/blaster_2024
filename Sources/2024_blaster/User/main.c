@@ -164,10 +164,13 @@ void display_status(){
 }
 
 void game_loop();
+void no_blaster_loop();
 
 int main(void)
 {
     setup();
+
+    no_blaster_loop();
 
     startup_animation();
 
@@ -176,6 +179,24 @@ int main(void)
 
        /*            IrDataPacket p = get_ir_packet();
                    if (p.raw > 0) printf("%d\r\n",p.team);*/
+
+}
+
+/* run this loop as long a the blaster is not detected.
+ * detection works by means of the team selector. If no team is selected then
+ * there is no blaster (or a broken switch)
+ * while in this mode, blink the onboard led GREEN at 2Hz
+ */
+void no_blaster_loop(){
+    while (!get_hw_team()) {
+        fill(color(0,255,0));
+        write_leds();
+        delay_ms(250);
+        fill(color(0,0,0));
+        write_leds();
+        delay_ms(250);
+
+    }
 
 }
 
