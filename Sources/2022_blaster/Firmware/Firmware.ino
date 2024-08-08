@@ -140,28 +140,27 @@ void chatter_master_loop(){
 
 void handle_badge_packet(LinkDataPacket packet)
 {
-  if (packet.raw == 0) return;
+  if (packet.get_raw() == 0) return;
 
-  switch (packet.command){
+  switch (packet.get_command()){
     case CMD_ACK:
       Serial.println("Link_in ACK");
       //not supposed to happen
       break;
     case CMD_MODE:
-      ModeParameter payload;
-      payload.raw = packet.parameter;
+      ModeParameter payload(packet.get_parameter());
       Serial.print("  Mode: ");
-      Serial.println(payload.mode);
+      Serial.println(payload.get_mode());
       Serial.print("  Team: ");
-      Serial.println(payload.team);
+      Serial.println(payload.get_team());
       Serial.print("  Action: ");
-      Serial.println(payload.action);
+      Serial.println(payload.get_action());
       Serial.print("  ID: ");
-      Serial.println(payload.id);
+      Serial.println(payload.get_id());
       Serial.print("  hp: ");
-      Serial.println(payload.hp);
+      Serial.println(payload.get_hp());
       Serial.print("  ready: ");
-      Serial.println(payload.ready);
+      Serial.println(payload.get_ready());
 
       sendAck();
       break;
@@ -248,10 +247,10 @@ void handle_play_animation(LinkDataPacket packet) {
 
 void handle_ir_packet(IrDataPacket packet)
 {
-  if (packet.raw == 0)
+  if (packet.get_raw() == 0)
     return;
   Serial.println("Received message from IR");
-  switch (packet.action)
+  switch (packet.get_action())
   {
   case eActionDamage:
     Serial.println("eActionDamage");
@@ -274,7 +273,7 @@ void handle_ir_packet(IrDataPacket packet)
 
 void handle_damage_received(IrDataPacket packet)
 {
-  if (packet.channel == channel && packet.team != activeTeam())
+  if (packet.get_channel() == channel && packet.get_team() != activeTeam())
   {
     Animations::stealth(false);
    
@@ -287,7 +286,7 @@ void handle_damage_received(IrDataPacket packet)
     {
     case eGMTimeout:
       // action here depends on game mode
-      Animations::crash(packet.team, hit_timeout);
+      Animations::crash(packet.get_team(), hit_timeout);
       if (hitpoints) hitpoints--;
       Serial.print("Hitpoints: ");
       Serial.println(hitpoints);
@@ -390,20 +389,18 @@ void damageShot()
   Serial.println("Pang!");
   Serial.println(activeTeam());
 
-  IrDataPacket packet;
-  packet.raw = 0;
-  packet.team = activeTeam();
-  packet.channel = channel;
-  packet.player_id = player_id;
-  packet.action = trigger_action;
-  packet.action_param = 1;
+  IrDataPacket packet(0);
+  packet.set_team(activeTeam());
+  packet.set_channel(channel);
+  packet.set_player_id(player_id);
+  packet.set_action(trigger_action);
+  packet.set_action_param(1);
   Data.transmit(packet);
 
   delay(100);
 
-  LinkDataPacket dp;
-  dp.raw = 0;
-  dp.command = CMD_TRIGGER;
+  LinkDataPacket dp(0);
+  dp.set_command(CMD_TRIGGER);
   Data.transmit(dp);
 
 /*
@@ -508,10 +505,9 @@ void modeSelection(){
 void sendAck()
 {
   delay(10);
-  LinkDataPacket dp;
-  dp.raw = 0;
-  dp.command = CMD_ACK;
-  dp.parameter = 1;  // Something to ensure we don't send out a 00000 packet
+  LinkDataPacket dp(0);
+  dp.set_command(CMD_ACK);
+  dp.set_parameter(1);  // Something to ensure we don't send out a 00000 packet
   Data.transmit(dp);
 }
 
