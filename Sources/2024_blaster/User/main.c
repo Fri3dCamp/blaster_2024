@@ -254,7 +254,7 @@ void game_loop() {
         if (ir_data_ready())
         {
             IrDataPacket p = get_ir_packet();
-            if (p.team != last_hw_team){
+            if (p.raw != 0 && p.team != last_hw_team){
 
                 if (hitpoints) {
                     hitpoints--;
