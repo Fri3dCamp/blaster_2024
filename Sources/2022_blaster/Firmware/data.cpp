@@ -1,6 +1,60 @@
 #include "data.h"
 #include <Arduino.h>
 
+IrDataPacket::IrDataPacket(){};
+IrDataPacket::IrDataPacket(uint32_t raw){this->raw=raw;};
+
+uint32_t IrDataPacket::get_raw()         { return this->raw; }
+uint8_t IrDataPacket::get_channel()      { return (this->raw & 0b00000000000000000000000000000001) >> 0; }
+uint8_t IrDataPacket::get_team()         { return (this->raw & 0b00000000000000000000000000001110) >> 1; }
+uint8_t IrDataPacket::get_action()       { return (this->raw & 0b00000000000000000000000000110000) >> 4; }
+uint8_t IrDataPacket::get_action_param() { return (this->raw & 0b00000000000000000000001111000000) >> 6; }
+uint16_t IrDataPacket::get_player_id()   { return (this->raw & 0b00000000001111111111110000000000) >> 10; }
+uint8_t IrDataPacket::get_crc()          { return (this->raw & 0b00111111110000000000000000000000) >> 22; }
+uint8_t IrDataPacket::get_unused()       { return (this->raw & 0b11000000000000000000000000000000) >> 30; }
+
+void IrDataPacket::set_raw(uint32_t raw)                  { this->raw = raw; }
+void IrDataPacket::set_channel(uint8_t channel)           { this->raw &= ~(0b1 << 0); this->raw |= (channel & 0b1) << 0;}
+void IrDataPacket::set_team(uint8_t team)                 { this->raw &= ~(0b111 << 1); this->raw |= (team & 0b111) << 1;}
+void IrDataPacket::set_action(uint8_t action)             { this->raw &= ~(0b11 << 4); this->raw |= (action & 0b11) << 4;}
+void IrDataPacket::set_action_param(uint8_t action_param) { this->raw &= ~(0b1111 << 6); this->raw |= (action_param & 0b1111) << 6;}
+void IrDataPacket::set_player_id(uint16_t player_id)      { this->raw &= ~((uint32_t)0b111111111111 << 10); this->raw |= (player_id & 0b111111111111) << 10;}
+void IrDataPacket::set_crc(uint8_t crc)                   { this->raw &= ~((uint32_t)0b11111111 << 22); this->raw |= (crc & (uint32_t)0b11111111) << 22;}
+void IrDataPacket::set_unused(uint8_t unused)             { this->raw &= ~((uint32_t)0b11 << 30); this->raw |= (unused & (uint32_t)0b11) << 30;}
+
+LinkDataPacket::LinkDataPacket(){};
+LinkDataPacket::LinkDataPacket(uint32_t raw){this->raw=raw;};
+
+uint32_t LinkDataPacket::get_raw()         { return this->raw; }
+uint8_t LinkDataPacket::get_command()      { return (this->raw & 0b00000000000000000000000000000111) >> 0; }
+uint32_t LinkDataPacket::get_parameter()   { return (this->raw & 0b00000000111111111111111111111000) >> 3; }
+uint8_t LinkDataPacket::get_crc()          { return (this->raw & 0b11111111000000000000000000000000) >> 24; }
+
+void LinkDataPacket::set_raw(uint32_t raw)             { this->raw = raw; }
+void LinkDataPacket::set_command(uint8_t command)      { this->raw &= ~(0b111 << 0); this->raw |= (command & 0b111) << 0;}
+void LinkDataPacket::set_parameter(uint32_t parameter) { this->raw &= ~(0b111111111111111111111 << 3); this->raw |= (parameter & 0b111111111111111111111) << 3;}
+void LinkDataPacket::set_crc(uint8_t crc)              { this->raw &= ~((uint32_t)0b11111111 << 24); this->raw |= (crc & (uint32_t)0b11111111) << 24;}
+
+
+ModeParameter::ModeParameter(){};
+ModeParameter::ModeParameter(uint32_t raw){this->raw=raw;};
+
+uint32_t ModeParameter::get_raw()   { return (this->raw & 0b00000000000111111111111111111111) >> 0; }
+uint8_t ModeParameter::get_mode()   { return (this->raw & 0b00000000000000000000000000000001) >> 0; }
+uint8_t ModeParameter::get_team()   { return (this->raw & 0b00000000000000000000000000001110) >> 1; }
+uint8_t ModeParameter::get_action() { return (this->raw & 0b00000000000000000000000000110000) >> 4; }
+uint16_t ModeParameter::get_id()    { return (this->raw & 0b00000000000000011111111111000000) >> 6; }
+uint8_t ModeParameter::get_hp()     { return (this->raw & 0b00000000000011100000000000000000) >> 17; }
+uint8_t ModeParameter::get_ready()  { return (this->raw & 0b00000000000100000000000000000000) >> 20; }
+
+void ModeParameter::set_raw(uint32_t raw)      { this->raw &= ~(0b111111111111111111111 << 0); this->raw |= (raw & 0b111111111111111111111) << 0;}
+void ModeParameter::set_mode(uint8_t mode)     { this->raw &= ~(0b1 << 0); this->raw |= (mode & 0b1) << 0;}
+void ModeParameter::set_team(uint8_t team)     { this->raw &= ~(0b111 << 1); this->raw |= (team & 0b111) << 1;}
+void ModeParameter::set_action(uint8_t action) { this->raw &= ~(0b11 << 4); this->raw |= (action & 0b11) << 4;}
+void ModeParameter::set_id(uint16_t id)        { this->raw &= ~((uint32_t)0b11111111111 << 6); this->raw |= (id & (uint32_t)0b11111111111) << 6;}
+void ModeParameter::set_hp(uint8_t hp)         { this->raw &= ~((uint32_t)0b111 << 17); this->raw |= (hp & (uint32_t)0b111) << 17;}
+void ModeParameter::set_ready(uint8_t ready)   { this->raw &= ~((uint32_t)0b1 << 20); this->raw |= (ready & (uint32_t)0b1) << 20;}
+
 
 /* #region DataReader */
 void DataReader::handlePinChange(bool state)
@@ -190,31 +244,29 @@ IrDataPacket _data::readIr() //add overload to bypass command type validation?
 {
   if (ir1_reader.isDataReady())
   {
-    IrDataPacket p;
-    p.raw = ir1_reader.getPacket();
-    Serial.println(p.raw);
-    p.raw = calculateCRC(p.raw);
-    if (p.crc == 0) 
+    IrDataPacket p(ir1_reader.getPacket());
+    Serial.println(p.get_raw());
+    p.set_raw(calculateCRC(p.get_raw()));
+    if (p.get_crc() == 0) 
     {
       ir2_reader.reset();
-      return p;   
+      return p;
       }
   }
 
   if (ir2_reader.isDataReady())
   {
-    IrDataPacket p;
-    p.raw = ir2_reader.getPacket();
-    p.raw = calculateCRC(p.raw);
-    if (p.crc == 0) 
+    IrDataPacket p(ir2_reader.getPacket());
+    Serial.println(p.get_raw());
+    p.set_raw(calculateCRC(p.get_raw()));
+    if (p.get_crc() == 0) 
     {
       ir1_reader.reset();
-      return p;   
+      return p;
       }
   }
 
-  auto emptyPacket = IrDataPacket();
-  emptyPacket.raw = 0;
+  auto emptyPacket = IrDataPacket(0);
   return emptyPacket;
 }
 
@@ -223,15 +275,14 @@ LinkDataPacket _data::readBadge()
   if (badge_reader.isDataReady())
   {
     LinkDataPacket p;
-    p.raw = badge_reader.getPacket();
-    p.raw = calculateCRC(p.raw);
-    if (p.crc == 0) 
+    p.set_raw(badge_reader.getPacket());
+    p.set_raw(calculateCRC(p.get_raw()));
+    if (p.get_crc() == 0) 
     {
       return p;   
     }
   }
-  auto emptyPacket = LinkDataPacket();
-  emptyPacket.raw = 0;
+  auto emptyPacket = LinkDataPacket(0);
   return emptyPacket;
 }
 
@@ -273,10 +324,10 @@ void _data::transmit(IrDataPacket packet)
   Serial.println("*");
   disableReceive(eAllDevices);
 
-  packet.crc = 0;
-  packet.raw = calculateCRC(packet.raw);
+  packet.set_crc(0);
+  packet.set_raw(calculateCRC(packet.get_raw()));
 
-  prepare_pulse_train(packet.raw);
+  prepare_pulse_train(packet.get_raw());
   transmit_ir = true;
   setup_ir_carrier();
   transmitting = true;
@@ -291,10 +342,10 @@ void _data::transmit(LinkDataPacket packet)
   Serial.println("Link SEnd");
   disableReceive(eAllDevices);
 
-  packet.crc = 0;
-  packet.raw = calculateCRC(packet.raw);
+  packet.set_crc(0);
+  packet.set_raw(calculateCRC(packet.get_raw()));
 
-  prepare_pulse_train(packet.raw);
+  prepare_pulse_train(packet.get_raw());
   transmit_badge = true;
   pinMode(BADGELINK_PIN, OUTPUT);
   transmitting = true;
@@ -394,8 +445,7 @@ void _data::receive_ISR(bool ir1, bool ir2, bool badge)
 
 /* #endregion */
 
-//todo investigate if static can be removed
-static _data &Data = Data.getInstance();
+_data &Data = Data.getInstance();
 
 ISR(TIMER2_COMPA_vect)
 {

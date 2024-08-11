@@ -45,66 +45,101 @@ enum Action : uint8_t
 #define CMD_TEAM 4
 #define CMD_ANIMATION 5
 
-union IrDataPacket
+/**
+ * @brief IR data packet
+ * holds the 32 ir bits in a private uint32_t
+ * structure: return type - field name - nr of bits
+ *  uint8_t channel: 1;
+ *  uint8_t team: 3;
+ *  uint8_t action: 2;
+ *  uint8_t action_param: 4;
+ *  uint16_t player_id: 12;
+ *  uint8_t crc: 8;
+ *  uint8_t unused: 2;
+ */
+class IrDataPacket
 {
+private:
   uint32_t raw;
-  struct
-  {
-    uint8_t channel: 1;
-    uint8_t team: 3;
-    uint8_t action: 2;
-    uint8_t action_param: 4;
-    uint16_t player_id: 12;
-    uint8_t crc: 8;
-  };
+public:
+  IrDataPacket();
+  IrDataPacket(uint32_t raw);
+  uint32_t get_raw();
+  void set_raw(uint32_t raw);
+  uint8_t get_channel();
+  void set_channel(uint8_t channel);
+  uint8_t get_team();
+  void set_team(uint8_t team);
+  uint8_t get_action();
+  void set_action(uint8_t action);
+  uint8_t get_action_param();
+  void set_action_param(uint8_t action_param);
+  uint16_t get_player_id();
+  void set_player_id(uint16_t player_id);
+  uint8_t get_crc();
+  void set_crc(uint8_t crc);
+  uint8_t get_unused();
+  void set_unused(uint8_t unused);
 };
 
-union LinkDataPacket
+/**
+ * @brief Link Data Packet on badge blaster link communication
+ * holds the 32 ir bits in a private uint32_t
+ * structure: return type - field name - nr of bits
+ * uint8_t command: 3;
+ * uint32_t parameter: 21;
+ * uint8_t crc: 8;
+ */
+class LinkDataPacket
 {
+private:
   uint32_t raw;
-  struct
-  {
-    uint8_t command: 3;
-    uint32_t parameter: 21;
-    uint8_t crc: 8;
-  };
+public:
+  LinkDataPacket();
+  LinkDataPacket(uint32_t raw);
+  uint32_t get_raw();
+  void set_raw(uint32_t raw);
+  uint8_t get_command();
+  void set_command(uint8_t command);
+  uint32_t get_parameter();
+  void set_parameter(uint32_t parameter);
+  uint8_t get_crc();
+  void set_crc(uint8_t crc);
 };
 
-union ShotParameter
+/**
+ * @brief Mode Parameter: 21 bits of LinkDataPacket parameter part
+ * holds the 21 bits in a private uint32_t
+ * structure: return type - field name - nr of bits
+ * uint8_t mode: 1;
+ * uint8_t team: 3;
+ * uint8_t action: 2;
+ * uint16_t id: 11;
+ * uint8_t hp: 3;
+ * uint8_t ready: 1;
+ */
+class ModeParameter
 {
+private:
   uint32_t raw;
-  struct
-  {
-    uint8_t team: 3;
-    uint8_t action: 2;
-    uint16_t id: 12;
-    uint8_t hp: 3;  //new HP amount
-  };
+public:
+  ModeParameter();
+  ModeParameter(uint32_t raw);
+  uint32_t get_raw();
+  void set_raw(uint32_t raw);
+  uint8_t get_mode();
+  void set_mode(uint8_t mode);
+  uint8_t get_team();
+  void set_team(uint8_t team);
+  uint8_t get_action();
+  void set_action(uint8_t action);
+  uint16_t get_id();
+  void set_id(uint16_t id);
+  uint8_t get_hp();
+  void set_hp(uint8_t hp);
+  uint8_t get_ready();
+  void set_ready(uint8_t ready);
 };
-
-union TriggerParameter
-{
-  uint32_t raw;
-  struct
-  {
-    uint8_t new_team: 3;
-  };
-};
-
-union ModeParameter
-{
-  uint32_t raw;
-  struct
-  {
-    uint8_t mode: 1;
-    uint8_t team: 3;
-    uint8_t action: 2;
-    uint16_t id: 11;
-    uint8_t hp: 3;
-    uint8_t ready: 1;
-  };
-};
-
 
 
 enum DeviceType: uint8_t
