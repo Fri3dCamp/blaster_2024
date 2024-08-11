@@ -21,25 +21,31 @@ volatile int8_t pulse_pointer;
 volatile int transmit_ir = 0;
 
 void handle_pulse(volatile DataReader *dr, uint32_t time){
-    if (dr->bits_read >= 32) {
-       return;
-   }
-   uint32_t delta = time - dr->last_interrupt;
-   if (delta > 896 && delta < 1400) {
-       dr->raw = dr->raw >> 1;
-       dr->raw &= 0x7FFFFFFF;
-       dr->bits_read++;
-   }
-   else if (delta > 1792 && delta < 2800) {
-       dr->raw = dr->raw >> 1;
-       dr->raw |= 0x80000000;
-       dr->bits_read++;
-   }
-   else{
-       dr->raw = 0;
-       dr->bits_read = 0;
-   }
-   dr->last_interrupt = time;
+  if(dr->data_ready == 1) return;
+
+  uint32_t delta = time - dr->last_interrupt;
+  dr->last_interrupt = time;
+
+  if (delta > (uint32_t)(13500 * 0.8) && delta < (uint32_t)(13500 / 0.8))
+  {
+    dr->bits_read = 1;
+    dr->raw = 0;
+    return;
+  }
+  if (dr->bits_read == 0) return;
+
+  if (delta > (uint32_t)(1120 * 0.8) && delta < (uint32_t)(1120 / 0.8)) {
+    dr->raw = dr->raw >> 1;
+    dr->raw &= 0x7FFFFFFF;
+    dr->bits_read++;
+    if (dr->bits_read = ir_bit_lenght + 1) dr->data_ready=1;
+  }
+  else if (delta > (uint32_t)(2250 * 0.8) && delta < (uint32_t)(2250 / 0.8)) {
+    dr->raw = dr->raw >> 1;
+    dr->raw |= 0x80000000;
+    dr->bits_read++;
+    if (dr->bits_read = ir_bit_lenght + 1) dr->data_ready=1;
+  }
 }
 
 void handle_ir_interrupt(int channel)
@@ -70,30 +76,37 @@ uint32_t calculateCRC(uint32_t raw_packet){
 }
 
 int ir_data_ready(){
-   return (ir1_reader.bits_read == 32 || ir2_reader.bits_read == 32);
+   return (ir1_reader.data_ready == 1 || ir2_reader.data_ready == 1);
 }
 
-IrDataPacket get_ir_packet(){
-    IrDataPacket p;
-    p.raw = 0;
-    if (ir1_reader.bits_read == 32) {
-        p.raw = ir1_reader.raw;
-    }
-    else if (ir2_reader.bits_read == 32) {
-        p.raw = ir2_reader.raw;
-    }
-    if (p.raw > 0) {
-        ir1_reader.bits_read = 0;
-        ir2_reader.bits_read = 0;
-        p.raw = calculateCRC(p.raw);
-        if (p.crc != 0) p.raw = 0;
-    }
-    return p;
+void data_reader_reset(volatile DataReader *dr)
+{
+  dr->raw = 0;
+  dr->bits_read = 0;
+  dr->data_ready = 0;
+}
+
+IrDataPacket get_ir_packet() {
+  IrDataPacket p;
+  p.raw = 0;
+  if (ir1_reader.data_ready == 1) {
+    p.raw = ir1_reader.raw;
+  }
+  else if (ir2_reader.data_ready == 1) {
+    p.raw = ir2_reader.raw;
+  }
+  if (p.raw != 0) {
+    data_reader_reset(&ir1_reader);
+    data_reader_reset(&ir2_reader);
+    p.raw = calculateCRC(p.raw);
+    if (p.crc != 0) p.raw = 0; // wrong CRC, clear packet
+  }
+  return p;
 }
 
 void enable_rx() {
-    ir1_reader.bits_read=0;
-    ir2_reader.bits_read=0;
+    data_reader_reset(&ir1_reader);
+    data_reader_reset(&ir2_reader);
     rx_enabled = 1;
 }
 
