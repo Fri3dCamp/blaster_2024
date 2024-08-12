@@ -7,7 +7,6 @@
 typedef struct {
     uint32_t raw;
     uint8_t bits_read;
-    uint8_t data_ready;
     uint32_t last_interrupt;
 } DataReader;
 
