@@ -20,6 +20,24 @@ volatile int pulse_train[pulse_train_lenght];
 volatile int8_t pulse_pointer;
 volatile int transmit_ir = 0;
 
+uint8_t get_channel(uint32_t raw)      { return (raw & 0b00000000000000000000000000000001) >> 0; }
+uint8_t get_team(uint32_t raw)         { return (raw & 0b00000000000000000000000000001110) >> 1; }
+uint8_t get_action(uint32_t raw)       { return (raw & 0b00000000000000000000000000110000) >> 4; }
+uint8_t get_action_param(uint32_t raw) { return (raw & 0b00000000000000000000001111000000) >> 6; }
+uint16_t get_player_id(uint32_t raw)   { return (raw & 0b00000000001111111111110000000000) >> 10; }
+uint8_t get_unused(uint32_t raw)       { return (raw & 0b00000000110000000000000000000000) >> 22; }
+uint8_t get_crc(uint32_t raw)          { return (raw & 0b11111111000000000000000000000000) >> 24; }
+
+uint32_t set_channel(uint32_t raw, uint8_t channel)           { raw &= ~(0b1 << 0); raw |= (channel & 0b1) << 0; return raw;}
+uint32_t set_team(uint32_t raw, uint8_t team)                 { raw &= ~(0b111 << 1); raw |= (team & 0b111) << 1; return raw;}
+uint32_t set_action(uint32_t raw, uint8_t action)             { raw &= ~(0b11 << 4); raw |= (action & 0b11) << 4; return raw;}
+uint32_t set_action_param(uint32_t raw, uint8_t action_param) { raw &= ~(0b1111 << 6); raw |= (action_param & 0b1111) << 6; return raw;}
+uint32_t set_player_id(uint32_t raw, uint16_t player_id)      { raw &= ~((uint32_t)0b111111111111 << 10); raw |= (player_id & 0b111111111111) << 10; return raw;}
+uint32_t set_unused(uint32_t raw, uint8_t unused)             { raw &= ~((uint32_t)0b11 << 22); raw |= (unused & (uint32_t)0b11) << 22; return raw;}
+uint32_t set_crc(uint32_t raw, uint8_t crc)                   { raw &= ~((uint32_t)0b11111111 << 24); raw |= (crc & (uint32_t)0b11111111) << 24; return raw;}
+
+
+
 void handle_pulse(volatile DataReader *dr, uint32_t time){
     if (dr->bits_read >= 32) {
        return;
@@ -73,20 +91,22 @@ int ir_data_ready(){
    return (ir1_reader.bits_read == 32 || ir2_reader.bits_read == 32);
 }
 
-IrDataPacket get_ir_packet(){
-    IrDataPacket p;
-    p.raw = 0;
+uint32_t get_ir_packet(){
+    uint32_t p = 0;
     if (ir1_reader.bits_read == 32) {
-        p.raw = ir1_reader.raw;
+        p = ir1_reader.raw;
     }
     else if (ir2_reader.bits_read == 32) {
-        p.raw = ir2_reader.raw;
+        p = ir2_reader.raw;
     }
-    if (p.raw > 0) {
+    if (p > 0) {
         ir1_reader.bits_read = 0;
         ir2_reader.bits_read = 0;
-        p.raw = calculateCRC(p.raw);
-        if (p.crc != 0) p.raw = 0;
+        p = calculateCRC(p);
+        if (get_crc(p) != 0) {
+            p = 0;
+            printf("CRC ERROR\r\n");
+        }
     }
     return p;
 }
@@ -178,13 +198,25 @@ void ir_off(void) {
     digitalWrite(PIN_PB1, LOW);
 }
 
-void send_ir_packet(IrDataPacket p)
+
+
+void send_ir_packet(uint32_t p)
 {
     disable_rx();
-    p.crc = 0;
-    p.raw = calculateCRC(p.raw);
+    p = set_crc(p, 0);
+    p = calculateCRC(p);
 
-    prepare_pulse_train(p.raw);
+    printf("raw: %u, ", p);
+    printf("CH: %u, ", get_channel(p));
+    printf("T: %u, ", get_team(p));
+    printf("A: %u, ", get_action(p));
+    printf("AP: %u, ", get_action_param(p));
+    printf("PID: %u, ", get_player_id(p));
+    printf("_: %u, ", get_unused(p));
+    printf("CRC: %u, ", get_crc(p));
+    printf("\r\n");
+
+    prepare_pulse_train(p);
 
     enable_ir_carrier();
     ir_off();

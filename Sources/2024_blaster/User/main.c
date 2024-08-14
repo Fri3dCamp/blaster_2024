@@ -231,7 +231,6 @@ void game_loop() {
     hitpoints = DEFAULTHP;
     while (1) {
         if (hw_team_changed()){
-            // debounce [C0Dq4jE-Ixw]
             delay_ms(10);
             while (hw_team_changed()) delay_ms(10);
             team_change_animation();
@@ -242,27 +241,28 @@ void game_loop() {
                 triggered = 0;
                 delay_ms(10);
             };
-            IrDataPacket p;
-            p.raw = 0;
-            p.team=last_hw_team;
-            p.action=1;
-            p.channel=0;
-            p.player_id = 0;
+            uint32_t p = 0;
+            p = set_team(p, last_hw_team);
+            p = set_action(p, 1);
+            p = set_channel(p, 0);
+            p = set_player_id(p, 0);
             send_ir_packet(p);
             shoot_animation();
         }
         if (ir_data_ready())
         {
-            IrDataPacket p = get_ir_packet();
-            if (p.raw != 0 && p.team != last_hw_team){
-
+            uint32_t p = get_ir_packet();
+            if (p != 0 &&
+                get_team(p) != last_hw_team &&
+                get_action(p) == 1){
                 if (hitpoints) {
                     hitpoints--;
-                    if (hitpoints) crash_animation(p.team, 2000);
-                    else crash_animation(p.team, 20);
+                    if (hitpoints) crash_animation(get_team(p), 2000);
+                    else crash_animation(get_team(p), 20);
                 }
                 get_ir_packet();
             }
+
         }
         if (hitpoints == 0) {
             for (int k=1; k< 5; k++){
