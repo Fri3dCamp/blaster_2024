@@ -105,7 +105,6 @@ uint32_t get_ir_packet(){
         p = calculateCRC(p);
         if (get_crc(p) != 0) {
             p = 0;
-            printf("CRC ERROR\r\n");
         }
     }
     return p;
@@ -205,19 +204,7 @@ void send_ir_packet(uint32_t p)
     disable_rx();
     p = set_crc(p, 0);
     p = calculateCRC(p);
-
-    printf("raw: %u, ", p);
-    printf("CH: %u, ", get_channel(p));
-    printf("T: %u, ", get_team(p));
-    printf("A: %u, ", get_action(p));
-    printf("AP: %u, ", get_action_param(p));
-    printf("PID: %u, ", get_player_id(p));
-    printf("_: %u, ", get_unused(p));
-    printf("CRC: %u, ", get_crc(p));
-    printf("\r\n");
-
     prepare_pulse_train(p);
-
     enable_ir_carrier();
     ir_off();
     transmit_ir = 1;

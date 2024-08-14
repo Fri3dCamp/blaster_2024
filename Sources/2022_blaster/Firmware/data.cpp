@@ -10,8 +10,8 @@ uint8_t IrDataPacket::get_team()         { return (this->raw & 0b000000000000000
 uint8_t IrDataPacket::get_action()       { return (this->raw & 0b00000000000000000000000000110000) >> 4; }
 uint8_t IrDataPacket::get_action_param() { return (this->raw & 0b00000000000000000000001111000000) >> 6; }
 uint16_t IrDataPacket::get_player_id()   { return (this->raw & 0b00000000001111111111110000000000) >> 10; }
-uint8_t IrDataPacket::get_crc()          { return (this->raw & 0b00111111110000000000000000000000) >> 22; }
-uint8_t IrDataPacket::get_unused()       { return (this->raw & 0b11000000000000000000000000000000) >> 30; }
+uint8_t IrDataPacket::get_unused()       { return (this->raw & 0b00000000110000000000000000000000) >> 22; }
+uint8_t IrDataPacket::get_crc()          { return (this->raw & 0b11111111000000000000000000000000) >> 24; }
 
 void IrDataPacket::set_raw(uint32_t raw)                  { this->raw = raw; }
 void IrDataPacket::set_channel(uint8_t channel)           { this->raw &= ~(0b1 << 0); this->raw |= (channel & 0b1) << 0;}
@@ -19,8 +19,8 @@ void IrDataPacket::set_team(uint8_t team)                 { this->raw &= ~(0b111
 void IrDataPacket::set_action(uint8_t action)             { this->raw &= ~(0b11 << 4); this->raw |= (action & 0b11) << 4;}
 void IrDataPacket::set_action_param(uint8_t action_param) { this->raw &= ~(0b1111 << 6); this->raw |= (action_param & 0b1111) << 6;}
 void IrDataPacket::set_player_id(uint16_t player_id)      { this->raw &= ~((uint32_t)0b111111111111 << 10); this->raw |= (player_id & 0b111111111111) << 10;}
-void IrDataPacket::set_crc(uint8_t crc)                   { this->raw &= ~((uint32_t)0b11111111 << 22); this->raw |= (crc & (uint32_t)0b11111111) << 22;}
-void IrDataPacket::set_unused(uint8_t unused)             { this->raw &= ~((uint32_t)0b11 << 30); this->raw |= (unused & (uint32_t)0b11) << 30;}
+void IrDataPacket::set_unused(uint8_t unused)             { this->raw &= ~((uint32_t)0b11 << 22); this->raw |= (unused & (uint32_t)0b11) << 22;}
+void IrDataPacket::set_crc(uint8_t crc)                   { this->raw &= ~((uint32_t)0b11111111 << 24); this->raw |= (crc & (uint32_t)0b11111111) << 24;}
 
 LinkDataPacket::LinkDataPacket(){};
 LinkDataPacket::LinkDataPacket(uint32_t raw){this->raw=raw;};
