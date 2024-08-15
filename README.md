@@ -28,7 +28,7 @@ The 2022 blaster can be upgraded with the new firmware in a few ways:
 
 Don't worry if you don't know how to do this or if you dont have the USB to UATY adapter/AVRISP. We will support you with this at Fri3d Camp.
 
-## Flash firmware to Blaster
+# Flash firmware to Blaster 2024
 To program the blaster (flamingo) you can use [Embeetle IDE](https://embeetle.com/). This is an IDE of Belgian make. The
 [LANA](https://phyx.be/LANA_TNY/) on the blaster (flamingo) can be programmed with [Embeetle](https://embeetle.com/) via the USB connector but also with the [WCH-Link debugger]
 (https://www.wch-ic.com/products/WCH-Link.html), this gives extra debugging options.
