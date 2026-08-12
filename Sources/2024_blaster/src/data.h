@@ -4,12 +4,12 @@
 
 #include <stdint.h>
 
-typedef struct {
+typedef struct
+{
     uint32_t raw;
     uint8_t bits_read;
     uint32_t last_interrupt;
 } DataReader;
-
 
 uint8_t get_channel(uint32_t raw);
 uint8_t get_team(uint32_t raw);
@@ -26,7 +26,6 @@ uint32_t set_action_param(uint32_t raw, uint8_t action_param);
 uint32_t set_player_id(uint32_t raw, uint16_t player_id);
 uint32_t set_unused(uint32_t raw, uint8_t unused);
 uint32_t set_crc(uint32_t raw, uint8_t crc);
-
 
 void enable_ir_interupt();
 void handle_ir_interrupt(int channel);

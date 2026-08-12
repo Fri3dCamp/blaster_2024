@@ -1,12 +1,12 @@
 #include "lana.h"
-#include <stdlib.h>
 #include "data.h"
+#include <stdlib.h>
 
 #define N 14
 uint8_t rgbArray[3 * N]; // Each color is 3 bytes
 volatile uint64_t ticks = 0;
 volatile uint64_t tick_interval = 0;
-volatile int triggered = 0; //todo: move to main, pass function to ISR to update
+volatile int triggered = 0; // todo: move to main, pass function to ISR to update
 
 uint64_t micros(void)
 {
@@ -20,14 +20,16 @@ uint64_t millis(void)
 
 void delay_micros(uint32_t delay)
 {
-    uint64_t ref = micros()+delay;
-    while (micros() < ref) __NOP();
+    uint64_t ref = micros() + delay;
+    while (micros() < ref)
+        __NOP();
 }
 
 void delay_ms(uint32_t delay)
 {
-    uint64_t ref = millis()+delay;
-    while (millis() < ref) __NOP();
+    uint64_t ref = millis() + delay;
+    while (millis() < ref)
+        __NOP();
 }
 
 void SYSTICK_Init_Config(u64 ticks)
@@ -35,13 +37,12 @@ void SYSTICK_Init_Config(u64 ticks)
     SysTick->SR = 0;
     SysTick->CNT = 0;
     SysTick->CMP = ticks;
-    SysTick->CTLR =0xF;
+    SysTick->CTLR = 0xF;
 
     NVIC_SetPriority(SysTicK_IRQn, 1);
     NVIC_EnableIRQ(SysTicK_IRQn);
     tick_interval = ticks;
 }
-
 
 void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void SysTick_Handler(void)
@@ -50,33 +51,34 @@ void SysTick_Handler(void)
     SysTick->SR = 0;
 
     // update counter
-    ticks+=tick_interval;
+    ticks += tick_interval;
     if (!digitalRead(PIN_PA6)) triggered++;
     transmit_ISR();
 }
 
-GPIO_TypeDef* PinToPort(int pin)
+GPIO_TypeDef *PinToPort(int pin)
 {
-    if(pin <= 15) return GPIOA;
-    if(pin <= 31) return GPIOB;
-    if(pin <= 63) return GPIOD;
+    if (pin <= 15) return GPIOA;
+    if (pin <= 31) return GPIOB;
+    if (pin <= 63) return GPIOD;
     return 0;
 }
 
 uint32_t PinToPeriph(int pin)
 {
-    if(pin <= 15) return RCC_APB2Periph_GPIOA;
-    if(pin <= 31) return RCC_APB2Periph_GPIOB;
-    if(pin <= 63) return RCC_APB2Periph_GPIOD;
+    if (pin <= 15) return RCC_APB2Periph_GPIOA;
+    if (pin <= 31) return RCC_APB2Periph_GPIOB;
+    if (pin <= 63) return RCC_APB2Periph_GPIOD;
     return 0;
 }
 
 uint16_t PinToBitMask(int pin)
 {
-    return 1<<(pin%16);
+    return 1 << (pin % 16);
 }
 
-void DisableSWD_UsePinsAsGPIO(void) {
+void DisableSWD_UsePinsAsGPIO(void)
+{
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
     GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE);
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -91,21 +93,24 @@ void DisableSWD_UsePinsAsGPIO(void) {
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
-void EnableSWD_UsePinsAsGPIO(void) {
-       RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
-       GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, DISABLE);
+void EnableSWD_UsePinsAsGPIO(void)
+{
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
+    GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, DISABLE);
 }
 
 void pinMode(uint8_t pin, uint8_t mode)
 {
-    if (pin == PIN_PA13 || pin == PIN_PA14){
+    if (pin == PIN_PA13 || pin == PIN_PA14)
+    {
         DisableSWD_UsePinsAsGPIO();
     }
 
     RCC_APB2PeriphClockCmd(PinToPeriph(pin), ENABLE);
     GPIO_InitTypeDef gpio_pin = {0};
     gpio_pin.GPIO_Pin = PinToBitMask(pin);
-    switch (mode) {
+    switch (mode)
+    {
         case OUTPUT:
             gpio_pin.GPIO_Mode = GPIO_Mode_Out_PP;
             break;
@@ -113,14 +118,14 @@ void pinMode(uint8_t pin, uint8_t mode)
             gpio_pin.GPIO_Mode = GPIO_Mode_IPU;
             break;
         case INPUT_PULLDOWN:
-             gpio_pin.GPIO_Mode = GPIO_Mode_IPD;
-             break;
+            gpio_pin.GPIO_Mode = GPIO_Mode_IPD;
+            break;
         case INPUT:
-             gpio_pin.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-             break;
+            gpio_pin.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+            break;
         case OUTPUT_AF_PP:
-             gpio_pin.GPIO_Mode = GPIO_Mode_AF_PP;
-             break;
+            gpio_pin.GPIO_Mode = GPIO_Mode_AF_PP;
+            break;
         default:
             gpio_pin.GPIO_Mode = GPIO_Mode_IN_FLOATING;
             break;
@@ -135,59 +140,67 @@ void digitalWrite(uint8_t pin, int value)
     GPIO_WriteBit(PinToPort(pin), PinToBitMask(pin), value);
 }
 
-uint8_t digitalRead(uint8_t pin){
+uint8_t digitalRead(uint8_t pin)
+{
     return GPIO_ReadInputDataBit(PinToPort(pin), PinToBitMask(pin));
 }
 
-void notone(void){
+void notone(void)
+{
     TIM_Cmd(TIM2, DISABLE); // Disable timer to stop PWM output
     TIM2->CH2CVR = 0;
     pinMode(PIN_PA1, OUTPUT);
     digitalWrite(PIN_PA1, 0);
 }
 
-void change_tone(uint16_t frequency){
-    uint32_t test = SystemCoreClock/frequency;
+void change_tone(uint16_t frequency)
+{
+    uint32_t test = SystemCoreClock / frequency;
 
     uint16_t PrescalerValue;
-    if (test / 100 > 65000) PrescalerValue = 65000;
-    else PrescalerValue = (uint16_t) test/100;
+    if (test / 100 > 65000)
+        PrescalerValue = 65000;
+    else
+        PrescalerValue = (uint16_t)test / 100;
 
-    uint16_t period = (uint16_t)(SystemCoreClock/PrescalerValue/frequency);
+    uint16_t period = (uint16_t)(SystemCoreClock / PrescalerValue / frequency);
 
     TIM2->PSC = PrescalerValue;
     TIM2->ATRLR = period;
-    TIM2->CH2CVR = period/2;
-    TIM2->CNT = period/2; //hack, to stop some sound glitches
+    TIM2->CH2CVR = period / 2;
+    TIM2->CNT = period / 2; // hack, to stop some sound glitches
 }
 
-void tone(uint16_t frequency){
+void tone(uint16_t frequency)
+{
     if (TIM2->CTLR1 & TIM_CEN)
     {
         change_tone(frequency);
         return;
     };
 
-    //Buzzer:  PA1, T2_CH2
+    // Buzzer:  PA1, T2_CH2
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
     pinMode(PIN_PA1, OUTPUT_AF_PP);
 
-    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-    TIM_OCInitTypeDef  TIM_OCInitStructure;
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    TIM_OCInitTypeDef TIM_OCInitStructure;
 
-    uint32_t test = SystemCoreClock/frequency;
+    uint32_t test = SystemCoreClock / frequency;
 
     uint16_t PrescalerValue;
-    if (test / 100 > 65000) PrescalerValue = 65000;
-    else PrescalerValue = (uint16_t) test/100;
+    if (test / 100 > 65000)
+        PrescalerValue = 65000;
+    else
+        PrescalerValue = (uint16_t)test / 100;
 
-    uint16_t period = (uint16_t)(SystemCoreClock/PrescalerValue/frequency);
+    uint16_t period = (uint16_t)(SystemCoreClock / PrescalerValue / frequency);
 
     // Time base configuration
     TIM_TimeBaseStructure.TIM_Period = period;
-    TIM_TimeBaseStructure.TIM_Prescaler = PrescalerValue-1;
+    TIM_TimeBaseStructure.TIM_Prescaler = PrescalerValue - 1;
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV2;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 
@@ -196,7 +209,7 @@ void tone(uint16_t frequency){
     // PWM1 Mode configuration: Channel 2 (Assuming PA1 is connected to TIM2 CH2)
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-    TIM_OCInitStructure.TIM_Pulse = period/2; // 50% duty cycle
+    TIM_OCInitStructure.TIM_Pulse = period / 2; // 50% duty cycle
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 
     TIM_OC2Init(TIM2, &TIM_OCInitStructure);

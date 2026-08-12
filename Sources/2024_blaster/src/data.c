@@ -38,89 +38,106 @@ uint32_t set_crc(uint32_t raw, uint8_t crc)                   { raw &= ~((uint32
 
 
 
-void handle_pulse(volatile DataReader *dr, uint32_t time){
-    if (dr->bits_read >= 32) {
-       return;
-   }
-   uint32_t delta = time - dr->last_interrupt;
-   if (delta > 896 && delta < 1400) {
-       dr->raw = dr->raw >> 1;
-       dr->raw &= 0x7FFFFFFF;
-       dr->bits_read++;
-   }
-   else if (delta > 1792 && delta < 2800) {
-       dr->raw = dr->raw >> 1;
-       dr->raw |= 0x80000000;
-       dr->bits_read++;
-   }
-   else{
-       dr->raw = 0;
-       dr->bits_read = 0;
-   }
-   dr->last_interrupt = time;
+void handle_pulse(volatile DataReader *dr, uint32_t time)
+{
+    if (dr->bits_read >= 32)
+    {
+        return;
+    }
+    uint32_t delta = time - dr->last_interrupt;
+    if (delta > 896 && delta < 1400)
+    {
+        dr->raw = dr->raw >> 1;
+        dr->raw &= 0x7FFFFFFF;
+        dr->bits_read++;
+    }
+    else if (delta > 1792 && delta < 2800)
+    {
+        dr->raw = dr->raw >> 1;
+        dr->raw |= 0x80000000;
+        dr->bits_read++;
+    }
+    else
+    {
+        dr->raw = 0;
+        dr->bits_read = 0;
+    }
+    dr->last_interrupt = time;
 }
 
 void handle_ir_interrupt(int channel)
 {
     uint32_t time = micros();
-    if (channel == 0){
-       handle_pulse(&ir1_reader, time);
+    if (channel == 0)
+    {
+        handle_pulse(&ir1_reader, time);
     }
-    if (channel == 1){
+    if (channel == 1)
+    {
         handle_pulse(&ir2_reader, time);
     }
 }
 
-uint32_t calculateCRC(uint32_t raw_packet){
-  uint32_t raw = raw_packet;
-  uint32_t checksum =  ((raw <<  2) & 0b10000000111111110111111100) ^
-            ((raw <<  1) & 0b01111111100000000111111110) ^
-            ((raw <<  0) & 0b00000000111111111111111111) ^
-            ((raw >>  1) & 0b00000000100000000000000000) ^
-            ((raw >>  2) & 0b00000000011111110000000000) ^
-            ((raw >>  3) & 0b00000000111111111000000000) ^
-            ((raw >>  4) & 0b00000011100000001111111100) ^
-            ((raw >>  5) & 0b00000000111111111000000010);
-  checksum = checksum ^ (checksum >> 8) ^ (checksum >> 16) ^ (checksum >> 24);
-  checksum = checksum & 0xFF;
-  raw ^= checksum << 24;
-  return raw;
+uint32_t calculateCRC(uint32_t raw_packet)
+{
+    uint32_t raw = raw_packet;
+    uint32_t checksum = ((raw << 2) & 0b10000000111111110111111100) ^
+                        ((raw << 1) & 0b01111111100000000111111110) ^
+                        ((raw << 0) & 0b00000000111111111111111111) ^
+                        ((raw >> 1) & 0b00000000100000000000000000) ^
+                        ((raw >> 2) & 0b00000000011111110000000000) ^
+                        ((raw >> 3) & 0b00000000111111111000000000) ^
+                        ((raw >> 4) & 0b00000011100000001111111100) ^
+                        ((raw >> 5) & 0b00000000111111111000000010);
+    checksum = checksum ^ (checksum >> 8) ^ (checksum >> 16) ^ (checksum >> 24);
+    checksum = checksum & 0xFF;
+    raw ^= checksum << 24;
+    return raw;
 }
 
-int ir_data_ready(){
-   return (ir1_reader.bits_read == 32 || ir2_reader.bits_read == 32);
+int ir_data_ready()
+{
+    return (ir1_reader.bits_read == 32 || ir2_reader.bits_read == 32);
 }
 
-uint32_t get_ir_packet(){
+uint32_t get_ir_packet()
+{
     uint32_t p = 0;
-    if (ir1_reader.bits_read == 32) {
+    if (ir1_reader.bits_read == 32)
+    {
         p = ir1_reader.raw;
     }
-    else if (ir2_reader.bits_read == 32) {
+    else if (ir2_reader.bits_read == 32)
+    {
         p = ir2_reader.raw;
     }
-    if (p > 0) {
+    if (p > 0)
+    {
         ir1_reader.bits_read = 0;
         ir2_reader.bits_read = 0;
         p = calculateCRC(p);
-        if (get_crc(p) != 0) {
+        if (get_crc(p) != 0)
+        {
             p = 0;
         }
     }
     return p;
 }
 
-void enable_rx() {
-    ir1_reader.bits_read=0;
-    ir2_reader.bits_read=0;
+void enable_rx()
+{
+    ir1_reader.bits_read = 0;
+    ir2_reader.bits_read = 0;
     rx_enabled = 1;
 }
 
-void disable_rx() {
+void disable_rx()
+{
     rx_enabled = 0;
 }
 
-int bitRead(uint32_t p, int index){
+int bitRead(uint32_t p, int index)
+{
     uint32_t mask = (uint32_t)1 << index;
 
     // Extract the bit value (0 or 1)
@@ -129,26 +146,26 @@ int bitRead(uint32_t p, int index){
 
 void prepare_pulse_train(uint32_t raw_packet)
 {
-  int index = 0;
-  pulse_train[index++] = ir_start_high_time;
-  pulse_train[index++] = ir_start_low_time;
-  for (int i = 0; i < ir_bit_lenght; i++)
-  {
-    if (bitRead(raw_packet, i))
+    int index = 0;
+    pulse_train[index++] = ir_start_high_time;
+    pulse_train[index++] = ir_start_low_time;
+    for (int i = 0; i < ir_bit_lenght; i++)
     {
-      pulse_train[index++] = ir_one_high_time;
-      pulse_train[index++] = ir_one_low_time;
+        if (bitRead(raw_packet, i))
+        {
+            pulse_train[index++] = ir_one_high_time;
+            pulse_train[index++] = ir_one_low_time;
+        }
+        else
+        {
+            pulse_train[index++] = ir_zero_high_time;
+            pulse_train[index++] = ir_zero_low_time;
+        }
     }
-    else
-    {
-      pulse_train[index++] = ir_zero_high_time;
-      pulse_train[index++] = ir_zero_low_time;
-    }
-  }
-  pulse_train[index++] = ir_stop_high_time;
-  pulse_train[index++] = ir_stop_low_time;
+    pulse_train[index++] = ir_stop_high_time;
+    pulse_train[index++] = ir_stop_low_time;
 
-  pulse_pointer = 0;
+    pulse_pointer = 0;
 }
 
 void enable_ir_carrier(void)
@@ -163,8 +180,8 @@ void enable_ir_carrier(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-    TIM_OCInitTypeDef  TIM_OCInitStructure;
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    TIM_OCInitTypeDef TIM_OCInitStructure;
 
     // Time base configuration
     TIM_TimeBaseStructure.TIM_Period = 1266;
@@ -186,18 +203,18 @@ void enable_ir_carrier(void)
     TIM_ARRPreloadConfig(TIM3, ENABLE);
 }
 
-void ir_on(void){
+void ir_on(void)
+{
     pinMode(PIN_PB1, OUTPUT_AF_PP);
     TIM_Cmd(TIM3, ENABLE);
 }
 
-void ir_off(void) {
+void ir_off(void)
+{
     TIM_Cmd(TIM3, DISABLE);
     pinMode(PIN_PB1, OUTPUT);
     digitalWrite(PIN_PB1, LOW);
 }
-
-
 
 void send_ir_packet(uint32_t p)
 {
@@ -213,42 +230,36 @@ void send_ir_packet(uint32_t p)
     enable_rx();
 }
 
-
-
 void transmit_ISR()
 {
-  if (transmit_ir)
-  {
-    if (pulse_pointer % 2 == 1) // would & 0b1 be faster?
+    if (transmit_ir)
     {
-      if (transmit_ir) ir_off();
-    }
-    else
-    {
-      if (transmit_ir) ir_on();
+        if (pulse_pointer % 2 == 1) // would & 0b1 be faster?
+        {
+            if (transmit_ir) ir_off();
+        }
+        else
+        {
+            if (transmit_ir) ir_on();
+        }
+        pulse_train[pulse_pointer]--; // count down
 
-    }
-    pulse_train[pulse_pointer]--; // count down
+        // if we reached the end go to the next pulse
+        if (pulse_train[pulse_pointer] <= 0)
+            pulse_pointer++;
 
-    // if we reached the end go to the next pulse
-    if (pulse_train[pulse_pointer] <= 0)
-      pulse_pointer++;
-
-    // unless we already were on the last pulse
-    if (pulse_pointer >= pulse_train_lenght)
-    {
-      transmit_ir = 0;
+        // unless we already were on the last pulse
+        if (pulse_pointer >= pulse_train_lenght)
+        {
+            transmit_ir = 0;
+        }
     }
-  }
 }
 
-
-
-void enable_ir_interupt(){
+void enable_ir_interupt()
+{
     // Enable GPIOA clock
     RCC_AHBPeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-
-
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource5);
@@ -282,21 +293,24 @@ void enable_ir_interupt(){
     NVIC_Init(&NVIC_InitStructure);
 }
 
-void EXTI3_IRQHandler( void ) __attribute__((interrupt));
-
-void EXTI3_IRQHandler(void) {
-   // Check if the interrupt was from PA3
-   if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
-       // Clear the interrupt flag
-       EXTI_ClearITPendingBit(EXTI_Line3);
-       handle_ir_interrupt(0);
-   }
+void EXTI3_IRQHandler(void) __attribute__((interrupt));
+void EXTI3_IRQHandler(void)
+{
+    // Check if the interrupt was from PA3
+    if (EXTI_GetITStatus(EXTI_Line3) != RESET)
+    {
+        // Clear the interrupt flag
+        EXTI_ClearITPendingBit(EXTI_Line3);
+        handle_ir_interrupt(0);
+    }
 }
 
-void EXTI9_5_IRQHandler( void ) __attribute__((interrupt));
-void EXTI9_5_IRQHandler(void) {
+void EXTI9_5_IRQHandler(void) __attribute__((interrupt));
+void EXTI9_5_IRQHandler(void)
+{
     // Check if the interrupt was from PA5
-    if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
+    if (EXTI_GetITStatus(EXTI_Line5) != RESET)
+    {
         // Clear the interrupt flag
         EXTI_ClearITPendingBit(EXTI_Line5);
         handle_ir_interrupt(1);
