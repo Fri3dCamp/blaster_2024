@@ -27,10 +27,22 @@ jobs:
           pio pkg install -g -p https://github.com/Community-PIO-CH32V/platform-ch32v.git
 
       - name: Parse Tag
-        uses: yukiakai212/publish-tag@v1
         id: tag
-        with:
-          prefix: "v"
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${GITHUB_REF_NAME#v}"
+
+          if [[ ! "$version" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "Invalid version tag: ${GITHUB_REF_NAME}"
+            echo "Expected format: vMAJOR.MINOR.PATCH (e.g. v1.2.3)"
+            exit 1
+          fi
+
+          echo "major=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          echo "minor=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+          echo "patch=${BASH_REMATCH[3]}" >> "$GITHUB_OUTPUT"
 
       - name: Run PlatformIO Build
         run: pio run -d Sources/2024_blaster -e release
