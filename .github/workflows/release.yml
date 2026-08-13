@@ -33,7 +33,7 @@ jobs:
           prefix: "v"
 
       - name: Run PlatformIO Build
-        run: pio run -d Sources -e release
+        run: pio run -d Sources/2024_blaster -e release
         env:
           PLATFORMIO_BUILD_FLAGS: "-DVERSION_MAJOR=\\\"${{ steps.tag.outputs.major }}\\\" -DVERSION_MINOR=\\\"${{ steps.tag.outputs.minor }}\\\" -DVERSION_PATCH=\\\"${{ steps.tag.outputs.patch }}\\\""
 
