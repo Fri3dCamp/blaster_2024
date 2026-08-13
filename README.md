@@ -14,10 +14,10 @@ Features:
  - Control the blaster via Link packets
 
 ## 2024 Blaster
-in Sources/2024_blaster. (WIP)
+in [Sources/2024_blaster](Sources/2024_blaster). (WIP)
 
 ## 2022 Blaster
-in Sources/2022_blaster
+in [Sources/2022_blaster](Sources/2022_blaster)
 
 This blaster can be upgraded to be compatible with the 2024 blaster
 
@@ -30,6 +30,9 @@ Don't worry if you don't know how to do this or if you dont have the USB to UATY
 
 &nbsp;<br>
 # Flash firmware to Blaster 2024
+
+> **Deprecated:** The build/flash instructions below (Embeetle IDE / Mounriver Studio) are deprecated. The 2024 blaster firmware has moved to [PlatformIO](https://platformio.org) — see [Sources/2024_blaster/readme.md](Sources/2024_blaster/readme.md) for the current build and flashing instructions. The instructions below are kept for reference.
+
 To program the small [LANA](https://phyx.be/LANA_TNY/) module on your `blaster` (flamingo), you can use either [Embeetle IDE](https://embeetle.com/) or [Mounriver Studio](http://www.mounriver.com/). Embeetle is an IDE of Belgian make. The LANA can be programmed directly via the USB-C connector but also with the [WCH-Link debugger](https://www.wch-ic.com/products/WCH-Link.html), which gives extra debugging options. <a href="https://embeetle.com/#supported-hardware/wch/boards/lana-tny-01">Click here</a> For the complete documentation on how to program the LANA module in Embeetle. The steps below show how to get started quickly to program your LANA module via its USB-C port.
 
 &nbsp;<br>
